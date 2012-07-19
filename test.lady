@@ -1,0 +1,12 @@
+<?
+# variable
+apples = 3
+
+# indent style
+if (apples > 1)
+  print 'Take one!'
+  apples--
+else
+  print 'Don\'t touch my apple!'
+  print count(apples)
+ 
