@@ -37,22 +37,5 @@
 
     <?php
     require_once('lady.php');
-    $source = file_get_contents('test.lady');
-    $php = lady($source);
-
-## Planned
-
-- Lists: `[]` and `{}` 
-
-#### LadyPHP
-
-    # array
-    list = ['one', 'two']
-    assoc = {'key': 'two'}
-
-#### PHP
-
-    # array
-    $list = array('one', 'two');
-    $assoc = array('key' => 'two');
+    $php = Lady::parseFile('test.lady');
 
