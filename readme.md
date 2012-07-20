@@ -13,25 +13,24 @@
     apples = 3
 
     # indent style
-    if (apples > 1)
-      print 'Take one!'
+    if (apples > 5)
+      print 'Take one apple.'
       apples--
     else
-      print 'Don\'t touch my apple!'
+      print "Don't touch my apples! I have only "
       print count(apples)
 
 #### PHP
 
-    <?
+    <?php
     $apples = 3;
+    if ($apples > 5){
+      print 'Take one apple.';
+      $apples--;}
+    else{
+      print "Don't touch my apples! I have only ";
+      print count($apples);}
 
-    if ($apples > 1) {
-      print 'Take one!';
-      $apples--;
-    } else {
-      print 'Don\'t touch my apple!';
-      print $count($apples);
-    } 
 
 ## Usage
 

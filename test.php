@@ -15,14 +15,12 @@ if ($compile){
 else {
   if (is_file($newPhp)){
     require($newPhp);
+    $not = (Lady::parseFile($lady) != file_get_contents($newPhp));
     print '<div>Testing <b>' . $newPhp . '</b>'.
-          '<a href="?compile">recompile</a>';
-    if (file_get_contents($php) == file_get_contents($newPhp))
-      print ' (same as ' . $php . ')';
-    else 
-      print ' (not same as ' . $php . ')';
+          '<a href="?compile">recompile</a>'.
+          ' (output is ' . ($not ? '<b>not</b>' : '') . ' same as source code)';
     print '</div>';
-    print Lady::test($lady);
+    print Lady::test($lady, Lady::PRESERVE);
   } else {
     print '<div>File <b>' . $newPhp . '</b> not found'.
           '<a href="?compile">recompile</a></div>';
@@ -34,3 +32,5 @@ print '<style>
   a {color: black; text-decoration: underline; font-weight: bold; margin: 0 2em; float: right}
   hr {display:none}
 </style>';
+
+//print Lady::test('test.lady');
