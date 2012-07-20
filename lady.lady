@@ -6,16 +6,16 @@ class Lady
   # ---------------------------------------------
   # constants
   # ---------------------------------------------
-  const REGEX_CODE = '/.*[^(<\?|<\?php)\{\} ].*/'
-  const REGEX_COMMENT = '/^ *(#|\/\/)/'
-  const REGEX_EMPTY = '/^ *$/'
-  const REGEX_END = '/(;|&|\|)$/'
-  const REGEX_CONTINUE = '/^[&\|]/'
-  const REGEX_END_OPENING = '/(^[^(]*|.*\))$/'
-  const REGEX_SMALL = '/^[a-z].*/'
-  const REGEX_NOVAR = '/^(false|true|self|null)$/'
+  const REGEX_CODE = '/.*[^(<\?|<\?php)\{\} ].*/' # no php code on line
+  const REGEX_COMMENT = '/^ *(#|\/\/)/'           # full line comment
+  const REGEX_EMPTY = '/^ *$/'                    # only spaces
+  const REGEX_ENDED = '/[;&\|,\.]$/'              # no semicolons after these
+  const REGEX_CONTINUE = '/^[&\|\.]/'             # condition on multiple lines
+  const REGEX_OPENING = '/(^[^(]*|.*\))$/'        # 'else' is opening
+  const REGEX_VARIABLE = '/^[a-z].*/'             # variable name
+  const REGEX_NOVARIABLE = '/^(false|true|self|null)$/' # not variables
 
-  const PRESERVE = 0
+  const PRESERVE = 1 # doesn't works (semicolons)
   const STRIP = 1
   const COMPRESS = 2
 
@@ -41,10 +41,10 @@ class Lady
       list(name, string) = token
       if (name == 'T_STRING'
           && tokens[n + 1][1] != '('
-          && preg_match(self::REGEX_SMALL, string)
-          && !preg_match(self::REGEX_NOVAR, string))
+          && preg_match(self::REGEX_VARIABLE, string)
+          && !preg_match(self::REGEX_NOVARIABLE, string))
         code .= '$' . string
-      elseif (name == 'T_COMMENT' && shrink >= 1)
+      elseif (name == 'T_COMMENT' && shrink >= self::STRIP)
         if (substr(string, -1) == "\n")
           code .= "\n"
       else
@@ -65,7 +65,7 @@ class Lady
         shrinkedLines[i] = str_repeat('  ', indent) . line
         i++
       else
-        emptyLines[i] .= $line . "\n"
+        emptyLines[i] .= rtrim($line) . "\n"
     shrinkedLines[] = 'true;'
     lines = shrinkedLines
 
@@ -85,11 +85,11 @@ class Lady
           && !preg_match(self::REGEX_CONTINUE, line)
           && preg_match(self::REGEX_CODE, lines[n - 1])
           && !preg_match(self::REGEX_COMMENT, lines[n - 1])
-          && !preg_match(self::REGEX_END, lines[n - 1])
+          && !preg_match(self::REGEX_ENDED, lines[n - 1])
           && !preg_match(self::REGEX_EMPTY, lines[n - 1]))
         lines[n - 1] .= ';'
       if (jump > 0 && n > 0
-          && preg_match(self::REGEX_END_OPENING, lines[n - 1]))
+          && preg_match(self::REGEX_OPENING, lines[n - 1]))
         lines[n - 1] .= '{'
       if (jump < 0)
         lines[n - 1] .= str_repeat('}', -jump)
@@ -98,7 +98,7 @@ class Lady
       lines[n] = emptyLines[n] . lines[n]
 
     code = implode("\n", array_slice(lines, 0, -1))
-    if (shrink >= 2)
+    if (shrink >= self::COMPRESS)
       code = self::compress(code)
 
     # output

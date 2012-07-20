@@ -1,21 +1,25 @@
 # LadyPHP - type PHP with elegance
 
-- semicolons are optional `;`
+Simple (and stupid) preprocessor for PHP. Main purpose of this is making a source code a little more beautiful.
+
+- optional `;` at the end of line
 - variables are not prefixed with `$`
-- indent style - no need for `{` and `}`
+- indent style (2 spaces), no need for `{` and `}`
+- original line numbers are preserved (handy for debugging)
+- Lady herself is written in Lady, use the source for reference
 
 ## Example
 
 #### LadyPHP
 
     <?
-    # variable
+
     apples = 3
 
-    # indent style
     if (apples > 5)
       print 'Take one apple.'
       apples--
+
     else
       print "Don't touch my apples! I have only "
       print count(apples)
@@ -23,10 +27,13 @@
 #### PHP
 
     <?php
+
     $apples = 3;
+
     if ($apples > 5){
       print 'Take one apple.';
       $apples--;}
+
     else{
       print "Don't touch my apples! I have only ";
       print count($apples);}
@@ -38,3 +45,8 @@
     require_once('lady.php');
     $php = Lady::parseFile('test.lady');
 
+## Bugs
+
+- `x->y` is converted to `$x->$y`
+- multiline comments doesn't works
+- semicolon is added at the end of line even if there is a comment
