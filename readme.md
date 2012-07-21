@@ -2,7 +2,7 @@
 
 Simple (and stupid) preprocessor for PHP. Main purpose of this is making a source code a little more beautiful.
 
-- optional `;` at the end of line
+- optional `;` at end of line
 - variables are not prefixed with `$`
 - indent style (2 spaces), no need for `{` and `}`
 - original line numbers are preserved (handy for debugging)
@@ -47,6 +47,5 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making a sourc
 
 ## Bugs
 
-- `x->y` is converted to `$x->$y`
 - multiline comments doesn't works
 - semicolon is added at the end of line even if there is a comment

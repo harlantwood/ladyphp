@@ -41,6 +41,7 @@ class Lady{
       list($name, $string) = $token;
       if ($name == 'T_STRING'
       && $tokens[$n + 1][1] != '('
+      && $tokens[$n - 1][1] != '->'
       && preg_match(self::REGEX_VARIABLE, $string)
       && !preg_match(self::REGEX_NOVARIABLE, $string)){
         $code .= '$' . $string;}

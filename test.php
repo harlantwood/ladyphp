@@ -41,7 +41,7 @@ else {
     if (Lady::parseFile($lady) == file_get_contents($newPhp))
       $ok[] = "Testing <b>$newPhp</b>: output is same as source code";
     else
-      $error[] = "Testing <b>$newPhp</b>: output is $not same as source code";
+      $error[] = "Testing <b>$newPhp</b>: output is not same as source code";
     print Lady::test($lady, Lady::PRESERVE);
   } else {
     $error[] = "File <b>$newPhp</b> not found";
