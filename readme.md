@@ -22,7 +22,7 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making a sourc
 
     else
       print "Don't touch my apples! I have only "
-      print count(apples)
+      print apples
 
 #### PHP
 
@@ -36,7 +36,7 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making a sourc
 
     else{
       print "Don't touch my apples! I have only ";
-      print count($apples);}
+      print $apples;}
 
 
 ## Usage
@@ -48,4 +48,4 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making a sourc
 ## Bugs
 
 - multiline comments doesn't works
-- semicolon is added at the end of line even if there is a comment
+- semicolon is added at end of line even if there is a comment
