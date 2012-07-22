@@ -1,0 +1,18 @@
+<?
+
+class Fruit
+  var apples = 0
+
+  function addApples(n = 1)
+    this->apples += n
+
+  function countApples()
+    out = 'You have ' . this->apples
+    if (this->apples == 1)
+      return out . ' apple.'
+    else
+      return out . ' apples.'
+
+fruit = new Fruit
+fruit->addApples(3)
+print fruit->countApples()
