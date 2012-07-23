@@ -1,6 +1,7 @@
 <?php
 
-include_once('ndebug.php');
+include_once('./ndebugger.php');
+NDebugger::enable();
 
 $lady = 'lady.lady';
 $php = 'lady.php';
@@ -11,11 +12,12 @@ $info = array();
 $error = array();
 $ok = array();
 
-$action = null;
+$action = 'example';
 foreach ($_GET as $k => $v){
   $action = $k;
   break;
 }
+NDebugger::barDump($action, 'action');
 
 ob_start();
 
@@ -43,11 +45,11 @@ elseif ($action == 'example'){
   else {
     require($php);
     print '<h3>LadyPHP</h3><pre>' . htmlspecialchars(file_get_contents($example)) . '</pre>';
-    print '<h3>PHP</h3><pre>' . htmlspecialchars(Lady::parseFile($example, Lady::PRESERVE)) . '</pre>';
+    print '<h3>PHP</h3><pre>' . htmlspecialchars(Lady::parseFile($example, Lady::PRESERVE, true)) . '</pre>';
     print '<h3>Output</h3><pre>' . htmlspecialchars(Lady::includeFile($example)) . '</pre>';
   }
 }
-else {
+elseif ($action == 'test'){
   if (!is_file($newPhp))
     $error[] = "File <b>$newPhp</b> not found";
   else {
@@ -66,17 +68,20 @@ else {
 
 $content = ob_get_clean();
 $menu = explode(' ', 'example test compile use');
+
 ?>
 <head><title>LadyPHP: <?=$action?></title></head>
 <body>
 
-<div class="menu">
-  <?foreach($menu as $item):?>
-    <a href="?<?=$item?>"><?=$item?></a>
-  <?endforeach?>
-</div>
 
-<div class="page">
+<div class="box">
+  <div class="menu">
+    <?foreach($menu as $item):?>
+      <a href="?<?=$item?>"><?=$item?></a>
+    <?endforeach?>
+  </div>
+
+  <div class="page">
   <?foreach($info as $item):?>
     <div class="info"><?=$item?></div>
   <?endforeach?>
@@ -90,14 +95,16 @@ $menu = explode(' ', 'example test compile use');
   <?endforeach?>
 
   <?=$content?>
+  </div>
 </div>
 
 <style>
-  body {max-width: 46em; margin: 0 auto; font-size: 14px; background-color:#222}
-  .page { padding: 4em 1em 2em 1em; background-color: white;}
-  .menu {position: fixed; left: 50%; margin-left: -23em;width: 44em; background-color: #222;padding: .7em 1em }
+  body {max-width: 48em; margin: 0 auto; font-size: 14px; background-color:#eee}
+  .box { background-color: white; position: relative; border: 1px solid #ccc}
+  .page { padding: 3em; background-color: white}
+  .menu {position: fixed; width: 46em; background-color: #222;padding: .7em 1em; z-index: 1; margin: -1px}
   pre {max-height: 25em; background-color: #fbfbfb; border: 1px solid #aaa; overflow: hidden; padding: .5em 1em }
-  pre:hover {overflow: auto}
+  pre:hover {background-color: #f8f8f8; overflow: auto}
   .info, .error, .ok {background-color: #def; padding: .4em 1em; margin: .3em}
   .error {background-color: #fdd}
   .ok {background-color: #dfd}
