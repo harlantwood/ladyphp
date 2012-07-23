@@ -58,10 +58,18 @@ elseif ($action == 'test'){
       $ok[] = "Testing <b>$newPhp</b>: output is same as source code";
     else
       $error[] = "Testing <b>$newPhp</b>: output is not same as source code";
-    print '<h3>LadyPHP</h3><pre>' . htmlspecialchars(file_get_contents($lady)) . '</pre>';
-    print '<h3>Preserve</h3><pre>' . htmlspecialchars(Lady::parseFile($lady, Lady::PRESERVE)) . '</pre>';
-    print '<h3>Strip</h3><pre>' . htmlspecialchars(Lady::parseFile($lady, Lady::STRIP)) . '</pre>';
-    print '<h3>Compress</h3><pre>' . htmlspecialchars(Lady::parseFile($lady, Lady::COMPRESS)) . '</pre>';
+    $ladyContent = file_get_contents($lady);
+    $ladyPreserve = Lady::parseFile($lady, Lady::PRESERVE);
+    $ladyStrip = Lady::parseFile($lady, Lady::STRIP);
+    $ladyCompress = Lady::parseFile($lady, Lady::COMPRESS);
+    print '<h3>LadyPHP (' . round(strlen($ladyContent) / 1024, 2) . ' kB)</h3>' .
+          '<pre>' . htmlspecialchars($ladyContent) . '</pre>' .
+          '<h3>Preserve (' . round(strlen($ladyPreserve) / 1024, 2) . ' kB)</h3>' .
+          '<pre>' . htmlspecialchars($ladyPreserve) . '</pre>' .
+          '<h3>Strip (' . round(strlen($ladyStrip) / 1024, 2) . ' kB)</h3>' .
+          '<pre>' . htmlspecialchars($ladyStrip) . '</pre>' .
+          '<h3>Compress (' . round(strlen($ladyCompress) / 1024, 2) . ' kB)</h3>' .
+          '<pre>' . htmlspecialchars($ladyCompress) . '</pre>';
 
   }
 }

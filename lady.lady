@@ -146,7 +146,7 @@ class Lady
         lines[n - 1] .= str_repeat('}', -jump)
 
       # add spaces (PRESERVE)
-      if (shrink < self::STRIP)
+      if (shrink == self::PRESERVE)
         line = spaceBefore . line . spaceAfter
 
       # change line
@@ -160,13 +160,13 @@ class Lady
     lines = explode("\n", implode("\n", lines))
 
     # add comments (PRESERVE)
-    if (shrink < self::STRIP)
+    if (shrink == self::PRESERVE)
       foreach (lines as n => line)
         if (isset(comments[n]))
           lines[n] = lines[n] . rtrim(comments[n])
 
-    # trim spaces (STRIP and COMPRESS)
-    else
+    # trim spaces (STRIP)
+    if (shrink == self::STRIP)
       foreach (lines as n => line)
         lines[n] = rtrim(line, ' ')
 
@@ -174,7 +174,7 @@ class Lady
     code = implode("\n", array_slice(lines, 0, -1))
 
     # minify code (COMPRESS)
-    if (shrink >= self::COMPRESS)
+    if (shrink == self::COMPRESS)
       code = self::compress(code)
 
     # output
@@ -220,7 +220,7 @@ class Lady
         token = array(0, token)
 
       if (in_array(token[0], array(T_COMMENT, T_ML_COMMENT, T_DOC_COMMENT, T_WHITESPACE)))
-        space = ' '
+        space = "\n"
       else
         if (isset(set[substr(output, -1)]) || isset(set[token[1]{0}]))
           space = ''
