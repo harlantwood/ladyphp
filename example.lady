@@ -2,19 +2,26 @@
 
 class Fruit
   var apples = 0
+  var numbers = [
+    1: 'one',
+    2: 'two',
+    3: 'three',
+  ]
 
   fn addApples(n = 1)
     this.apples += n
     return this
 
   fn countApples()
-    out = 'You have ' . this.apples
+    apples = this.apples
+    out = 'You have '
+    out .= isset(this.numbers[apples]) ? this.numbers[apples] : apples
     if (this.apples == 1)
       return out . ' apple.'
     else
       return "$out apples."
 
 fruit = Fruit()
-fruit.addApples(3)
+fruit.addApples(1)
      .addApples(2)
 print fruit.countApples()

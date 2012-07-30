@@ -24,7 +24,7 @@ ob_start();
 if ($action == 'compile'){
   require($php);
   $info[] = "Compiling <b>$lady</b> to <b>$newPhp</b> with <b>$php</b>";
-  file_put_contents($newPhp, Lady::parseFile($lady, $style));
+  file_put_contents($newPhp, Lady::parseFile($lady, null, $style));
   $ok[] = 'Compiled';
   //print '<meta http-equiv="refresh" content="1;url=?test">';
 }
@@ -45,8 +45,11 @@ elseif ($action == 'example'){
   else {
     require($php);
     print '<h3>LadyPHP</h3><pre>' . htmlspecialchars(file_get_contents($example)) . '</pre>';
-    print '<h3>PHP</h3><pre>' . htmlspecialchars(Lady::parseFile($example, Lady::PRESERVE, true)) . '</pre>';
-    print '<h3>Output</h3><pre>' . htmlspecialchars(Lady::includeFile($example)) . '</pre>';
+    print '<h3>PHP</h3><pre>' . htmlspecialchars(Lady::parseFile($example, null, Lady::PRESERVE)) . '</pre>';
+    ob_start();
+    Lady::$debug = true;
+    Lady::includeFile($example);
+    print '<h3>Output</h3><pre>' . htmlspecialchars(ob_get_clean()) . '</pre>';
   }
 }
 elseif ($action == 'test'){
@@ -54,14 +57,14 @@ elseif ($action == 'test'){
     $error[] = "File <b>$newPhp</b> not found";
   else {
     require($newPhp);
-    if (Lady::parseFile($lady, $style) == file_get_contents($newPhp))
+    if (Lady::parseFile($lady, null, $style) == file_get_contents($newPhp))
       $ok[] = "Testing <b>$newPhp</b>: output is same as source code";
     else
       $error[] = "Testing <b>$newPhp</b>: output is not same as source code";
     $ladyContent = file_get_contents($lady);
-    $ladyPreserve = Lady::parseFile($lady, Lady::PRESERVE);
-    $ladyStrip = Lady::parseFile($lady, Lady::STRIP);
-    $ladyCompress = Lady::parseFile($lady, Lady::COMPRESS);
+    $ladyPreserve = Lady::parseFile($lady, null, Lady::PRESERVE);
+    $ladyStrip = Lady::parseFile($lady, null, Lady::STRIP);
+    $ladyCompress = Lady::parseFile($lady, null, Lady::COMPRESS);
     print '<h3>LadyPHP (' . round(strlen($ladyContent) / 1024, 2) . ' kB)</h3>' .
           '<pre>' . htmlspecialchars($ladyContent) . '</pre>' .
           '<h3>Preserve (' . round(strlen($ladyPreserve) / 1024, 2) . ' kB)</h3>' .
