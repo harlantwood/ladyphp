@@ -100,13 +100,13 @@ Convert LadyPHP from string to PHP code.
 
 ### Lady::parseFile()
 
-    Lady::parseFile(string $file, string $cacheFile = null, int $shrink = self::PRESERVE)`
+    Lady::parseFile(string $file, string $cacheFile = null, int $shrink = self::PRESERVE)
 
 Convert LadyPHP from file to PHP code.
 
 ### Lady::includeFile()
 
-    Lady::includeFile(string $file, string $cacheFile = null, int $shrink = self::PRESERVE)`
+    Lady::includeFile(string $file, string $cacheFile = null, int $shrink = self::PRESERVE)
 
 If `cacheFile` is null, convert LadyPHP from file and execute output.
 
@@ -114,13 +114,13 @@ If `cacheFile` is set, then check if `cacheFile` if newer then `file`. If it's o
 
 ### Lady::testFile()
 
-    Lady::testFile(string $file, int $shrink = self::PRESERVE)`
+    Lady::testFile(string $file, int $shrink = self::PRESERVE)
 
 Parse file and show input and output as html.
 
 ### Lady::compress()
 
-    Lady::compress(string $php)`
+    Lady::compress(string $php)
 
 Helper function to remove whitespaces from PHP code.
 
