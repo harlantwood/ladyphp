@@ -86,27 +86,28 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making source 
 
 ## API
 
-### Shrink constants
+### Flags
 
-- `Lady::PRESERVE` - preserve line numbers and comments
+- `Lady::PRESERVE` - preserve line numbers and comments (default)
 - `Lady::STRIP` - preserve line numbers, strip comments
 - `Lady::COMPRESS` - compress output php code (remove whitespace)
+- `Lady::NOCACHE` - always overwrite cache file
 
 ### Lady::parse()
 
-    Lady::parse(string $source, int $shrink = self::PRESERVE)
+    Lady::parse(string $source, int $flags = 0)
 
 Convert LadyPHP from string to PHP code.
 
 ### Lady::parseFile()
 
-    Lady::parseFile(string $file, string $cacheFile = null, int $shrink = self::PRESERVE)
+    Lady::parseFile(string $file, string $cacheFile = null, int $flags = 0)
 
 Convert LadyPHP from file to PHP code.
 
 ### Lady::includeFile()
 
-    Lady::includeFile(string $file, string $cacheFile = null, int $shrink = self::PRESERVE)
+    Lady::includeFile(string $file, string $cacheFile = null, int $flags = 0)
 
 If `cacheFile` is null, convert LadyPHP from file and execute output.
 
@@ -114,7 +115,7 @@ If `cacheFile` is set, then check if `cacheFile` if newer then `file`. If it's o
 
 ### Lady::testFile()
 
-    Lady::testFile(string $file, int $shrink = self::PRESERVE)
+    Lady::testFile(string $file, int $flags = 0)
 
 Parse file and show input and output as html.
 

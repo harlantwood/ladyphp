@@ -45,7 +45,7 @@ elseif ($action == 'example'){
   else {
     require($php);
     print '<h3>LadyPHP</h3><pre>' . htmlspecialchars(file_get_contents($example)) . '</pre>';
-    print '<h3>PHP</h3><pre>' . htmlspecialchars(Lady::parseFile($example, null, Lady::PRESERVE)) . '</pre>';
+    print '<h3>PHP</h3><pre>' . htmlspecialchars(Lady::parseFile($example)) . '</pre>';
     ob_start();
     Lady::$debug = true;
     Lady::includeFile($example);
