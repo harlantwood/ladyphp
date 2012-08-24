@@ -3,7 +3,7 @@
 Simple (and stupid) preprocessor for PHP. Main purpose of this is making source code a little more beautiful.
 
 - optional `;` at end of line
-- variables doesn't has to be prefixed with `$`, but it must starts with a lowercase letter
+- variables doesn't have to be prefixed with `$`, but it must starts with a lowercase letter
 - indent style (2 spaces), no need for `{` and `}`
 - `.` is converted to `->`, but not if it's surrounded by spaces
 - `:` is converted to `=>`, but only if there isn't space before it
@@ -125,7 +125,7 @@ Parse file and show input and output as html.
 Helper function to remove whitespaces from PHP code.
 
 
-## What doesn't works
+## What doesn't work
 
 - multiline comments and inline html
 - switch block
