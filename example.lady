@@ -1,13 +1,14 @@
 <?
 
 class Fruit
-  var apples = 0
+  var apples = 0 # comment
   var numbers = [
     1: 'one',
     2: 'two',
     3: 'three',
   ]
 
+  /* comment */
   fn addApples(n = 1)
     this.apples += n
     return this

@@ -1,126 +1,58 @@
 <?php
 
-include_once('./ndebugger.php');
+require_once('ndebugger.php');
+require_once('lady.php');
+
+function h($s){
+  return htmlspecialchars($s, ENT_QUOTES);
+}
+
 NDebugger::enable();
+Lady::includeFile('tokenizer.lady');
+$source = file_get_contents('example.lady');
+$out = null;
 
-$lady = 'lady.lady';
-$php = 'lady.php';
-$newPhp = 'lady_new.php';
-$example = 'example.lady';
-$style = 0;
-$info = array();
-$error = array();
-$ok = array();
-
-$action = 'example';
-foreach ($_GET as $k => $v){
-  $action = $k;
-  break;
-}
-NDebugger::barDump($action, 'action');
-
-ob_start();
-
-if ($action == 'compile'){
-  require($php);
-  $info[] = "Compiling <b>$lady</b> to <b>$newPhp</b> with <b>$php</b>";
-  file_put_contents($newPhp, Lady::parseFile($lady, null, $style));
-  $ok[] = 'Compiled';
-  //print '<meta http-equiv="refresh" content="1;url=?test">';
-}
-elseif ($action == 'use'){
-  if (!is_file($newPhp))
-    $error[] =  "<b>$newPhp</b> not found";
-  elseif (file_get_contents($newPhp) == file_get_contents($php))
-    $error[] =  "<b>$newPhp</b> is same as <b>$php</b>";
-  else {
-    rename($php, 'lady-' . time() . '.php');
-    rename($newPhp, $php);
-    $ok[] =  "<b>$newPhp</b> moved to <b>$php<b>";
+$tokens = LadyTokenizer::tokenize($source);
+foreach($tokens as $n => $token){
+  $out .= '<span><b>';
+  foreach($token as $key => $value){
+    $out .= h($key) . ': ' . h(var_export($value, true)) . '<br>';
   }
+  $out .= '</b>' . h($token['blank']) . h($token['str']) . '</span>';
 }
-elseif ($action == 'example'){
-  if (!is_file($example))
-    $error[] = "File <b>$example</b> not found";
-  else {
-    require($php);
-    print '<h3>LadyPHP</h3><pre>' . htmlspecialchars(file_get_contents($example)) . '</pre>';
-    print '<h3>PHP</h3><pre>' . htmlspecialchars(Lady::parseFile($example)) . '</pre>';
-    ob_start();
-    Lady::$debug = true;
-    Lady::includeFile($example);
-    print '<h3>Output</h3><pre>' . htmlspecialchars(ob_get_clean()) . '</pre>';
-  }
-}
-elseif ($action == 'test'){
-  if (!is_file($newPhp))
-    $error[] = "File <b>$newPhp</b> not found";
-  else {
-    require($newPhp);
-    if (Lady::parseFile($lady, null, $style) == file_get_contents($newPhp))
-      $ok[] = "Testing <b>$newPhp</b>: output is same as source code";
-    else
-      $error[] = "Testing <b>$newPhp</b>: output is not same as source code";
-    $ladyContent = file_get_contents($lady);
-    $ladyPreserve = Lady::parseFile($lady, null, Lady::PRESERVE);
-    $ladyStrip = Lady::parseFile($lady, null, Lady::STRIP);
-    $ladyCompress = Lady::parseFile($lady, null, Lady::COMPRESS);
-    print '<h3>LadyPHP (' . round(strlen($ladyContent) / 1024, 2) . ' kB)</h3>' .
-          '<pre>' . htmlspecialchars($ladyContent) . '</pre>' .
-          '<h3>Preserve (' . round(strlen($ladyPreserve) / 1024, 2) . ' kB)</h3>' .
-          '<pre>' . htmlspecialchars($ladyPreserve) . '</pre>' .
-          '<h3>Strip (' . round(strlen($ladyStrip) / 1024, 2) . ' kB)</h3>' .
-          '<pre>' . htmlspecialchars($ladyStrip) . '</pre>' .
-          '<h3>Compress (' . round(strlen($ladyCompress) / 1024, 2) . ' kB)</h3>' .
-          '<pre>' . htmlspecialchars($ladyCompress) . '</pre>';
-
-  }
-}
-
-$content = ob_get_clean();
-$menu = explode(' ', 'example test compile use');
 
 ?>
-<head><title>LadyPHP: <?=$action?></title></head>
-<body>
-
-
-<div class="box">
-  <div class="menu">
-    <?foreach($menu as $item):?>
-      <a href="?<?=$item?>"><?=$item?></a>
-    <?endforeach?>
-  </div>
-
-  <div class="page">
-  <?foreach($info as $item):?>
-    <div class="info"><?=$item?></div>
-  <?endforeach?>
-
-  <?foreach($error as $item):?>
-    <div class="error"><?=$item?></div>
-  <?endforeach?>
-
-  <?foreach($ok as $item):?>
-    <div class="ok"><?=$item?></div>
-  <?endforeach?>
-
-  <?=$content?>
-  </div>
-</div>
-
+<title>LadyPHP Tokenizer</title>
+<h1>LadyPHP Tokenizer</h1>
+<pre><?= $out ?></pre>
 <style>
-  body {max-width: 48em; margin: 0 auto; font-size: 14px; background-color:#eee}
-  .box { background-color: white; position: relative; border: 1px solid #ccc}
-  .page { padding: 3em; background-color: white}
-  .menu {position: fixed; width: 46em; background-color: #222;padding: .7em 1em; z-index: 1; margin: -1px}
-  pre {max-height: 25em; background-color: #fbfbfb; border: 1px solid #aaa; overflow: hidden; padding: .5em 1em }
-  pre:hover {background-color: #f8f8f8; overflow: auto}
-  .info, .error, .ok {background-color: #def; padding: .4em 1em; margin: .3em}
-  .error {background-color: #fdd}
-  .ok {background-color: #dfd}
-  a {color: #cdf; font-weight:bold; text-decoration: none; margin: .5em}
-  a:hover {color: #fff; text-decoration: underline}
-  hr {display:none}
-  .clear {clear: both}
+body{
+  margin: 1em auto;
+  max-width: 50em;
+}
+pre{
+  padding: .5em;
+  border: 1px solid gray;
+}
+span{
+  background-color: #fdf;
+  position: relative;
+}
+b{
+  display: none;
+  position: absolute;
+  z-index: 10;
+  background: #aaf;
+  top: 1em;
+  left: 1em;
+}
+span:hover b{
+  display: block;
+}
+span b:hover{
+  display: none;
+}
+span:nth-child(odd){
+  background-color: #dfd;
+}
 </style>
