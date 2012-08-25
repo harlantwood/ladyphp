@@ -2,7 +2,6 @@
 
 class Lady
 
-
   # ---------------------------------------------
   # constants
   # ---------------------------------------------
@@ -27,14 +26,13 @@ class Lady
   const INDENT_WIDTH = 2
   static debug = false
 
-
   # ---------------------------------------------
   # parse
   # convert lady script to php
   # ---------------------------------------------
-  static public function parse(source, flags = 0)
+  static fn parse(source, flags = 0)
     code = noVar = null
-    dump = comment = array()
+    dump = comment = []
 
     # get shrink method from flags
     shrink = self.PRESERVE
@@ -49,8 +47,8 @@ class Lady
     # convert string tokens to arrays
     foreach (tokens as n: token)
       if (!is_array(token))
-        tokens[n] = array(null, token, null)
-    
+        tokens[n] = [null, token, null]
+
     # process tokens
     foreach (tokens as n: token)
       list(name, string, line) = token
@@ -127,7 +125,7 @@ class Lady
       if (preg_match(self.REGEX_CODE, line))
         shrinkedLines[newLineNum] = line
         newLineNum++
-      else 
+      else
         emptyLines[newLineNum] .= line . "\n"
     shrinkedLines[] = 'true;'
     lines = shrinkedLines
@@ -141,7 +139,7 @@ class Lady
         indentBefore = indent
         indent = (strlen(line) - strlen(ltrim(line))) / self.INDENT_WIDTH
         jump = indent - indentBefore
-      else 
+      else
         jump = 0
 
       # trim spaces
@@ -156,7 +154,7 @@ class Lady
         line = lines[n] = ''
 
       # add semicolon
-      if (jump <= 0 
+      if (jump <= 0
           && n > 0
           && !preg_match(self.REGEX_CONTINUE, line) # line starting && ||...
           && preg_match(self.REGEX_CODE, lines[n - 1])
@@ -215,12 +213,12 @@ class Lady
     if (self.debug)
       NDebugger.barDump(dump, 'Lady tokens')
     return code
-  
+
   # ---------------------------------------------
   # cacheFile
   # check cacheFile, parse if it's old
   # ---------------------------------------------
-  static public function cacheFile(file, cacheFile, flags = 0)
+  static fn cacheFile(file, cacheFile, flags = 0)
     if (!is_dir(dirname(cacheFile)))
       mkdir(dirname(cacheFile), 0755, true)
     if (!is_file(cacheFile) || filemtime(cacheFile) <= filemtime(file) || flags & self.NOCACHE)
@@ -231,32 +229,31 @@ class Lady
   # parseFile
   # load file and parse it
   # ---------------------------------------------
-  static public function parseFile(file, cacheFile = null, flags = 0)
+  static fn parseFile(file, cacheFile = null, flags = 0)
     if (cacheFile == null)
       return self.parse(file_get_contents(file), flags)
     else
       return file_get_contents(self.cacheFile(file, cacheFile, flags))
-  
 
   # ---------------------------------------------
   # includeFile
   # parse file and execute it
   # ---------------------------------------------
-  static public function includeFile(file, cacheFile = null, flags = 0)
+  static fn includeFile(file, cacheFile = null, flags = 0)
     if (cacheFile == null)
       return eval('?>' . self.parseFile(file, null, flags))
     else
       return require_once(self.cacheFile(file, cacheFile, flags))
-  
+
   # ---------------------------------------------
   # testFile
   # ---------------------------------------------
-  static public function testFile(file, flags = 0)
+  static fn testFile(file, flags = 0)
     input = file_get_contents(file)
     output = self.parseFile(file, null, flags)
     pre = '<pre style="max-height:40em;max-width:30em;float:left;overflow:auto;font-size:12px;border:1px solid gray;padding:.2em;background-color:#fafafa">'
     html = '<div><h3 style="margin:0">' . file . '</h3>'
-    foreach (array(input, output) as text)
+    foreach ([input, output] as text)
       html .= pre
       foreach (explode("\n", text) as n: line)
         html .= sprintf('%3d: %s', n, htmlspecialchars(line)) . "\n"
@@ -268,7 +265,7 @@ class Lady
   # compress
   # strip comments and compress php source
   # ---------------------------------------------
-  static public function compress(php)
+  static fn compress(php)
     if (!defined('T_DOC_COMMENT'))
       define('T_DOC_COMMENT', -1)
     if (!defined('T_ML_COMMENT'))
@@ -280,9 +277,9 @@ class Lady
 
     foreach (token_get_all(php) as token)
       if (!is_array(token))
-        token = array(0, token)
+        token = [0, token]
 
-      if (in_array(token[0], array(T_COMMENT, T_ML_COMMENT, T_DOC_COMMENT, T_WHITESPACE)))
+      if (in_array(token[0], [T_COMMENT, T_ML_COMMENT, T_DOC_COMMENT, T_WHITESPACE]))
         space = "\n"
       else
         if (isset(set[substr(output, -1)]) || isset(set[token[1]{0}]))
@@ -290,4 +287,3 @@ class Lady
         output .= space . token[1]
         space = ''
     return output
-

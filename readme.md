@@ -5,7 +5,7 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making source 
 - optional `;` at end of line
 - variables doesn't have to be prefixed with `$`, but it must starts with a lowercase letter
 - indent style (2 spaces), no need for `{` and `}`
-- `.` is converted to `->`, but not if it's surrounded by spaces
+- `.` is converted to `->` or `::`, but not if it's surrounded by spaces
 - `:` is converted to `=>`, but only if there isn't space before it
 - `fn foo()` is converted to `function foo()`
 - `Foo()` is converted to `new Foo()`
