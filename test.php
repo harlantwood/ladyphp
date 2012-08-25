@@ -2,57 +2,82 @@
 
 require_once('ndebugger.php');
 require_once('lady.php');
+Lady::includeFile('newlady.lady', 'newlady.php');
 
 function h($s){
-  return htmlspecialchars($s, ENT_QUOTES);
+  return htmlspecialchars($s);
 }
 
+# debugger
 NDebugger::enable();
-Lady::includeFile('tokenizer.lady');
-$source = file_get_contents('example.lady');
-$out = null;
 
-$tokens = LadyTokenizer::tokenize($source);
+# parse example
+$example = NewLady::testFile('example.lady');
+
+# test tokenizer
+$out = null;
+$tokens = NewLady::tokenize(file_get_contents('example.lady'));
 foreach($tokens as $n => $token){
-  $out .= '<span><b>';
+  $out .= h($token['blank']) . '<span><b>';
   foreach($token as $key => $value){
     $out .= h($key) . ': ' . h(var_export($value, true)) . '<br>';
   }
-  $out .= '</b>' . h($token['blank']) . h($token['str']) . '</span>';
+  $out .= '</b>' . h($token['str']) . '</span>';
 }
 
 ?>
-<title>LadyPHP Tokenizer</title>
-<h1>LadyPHP Tokenizer</h1>
-<pre><?= $out ?></pre>
-<style>
-body{
-  margin: 1em auto;
-  max-width: 50em;
-}
-pre{
-  padding: .5em;
-  border: 1px solid gray;
-}
-span{
-  background-color: #fdf;
-  position: relative;
-}
-b{
-  display: none;
-  position: absolute;
-  z-index: 10;
-  background: #aaf;
-  top: 1em;
-  left: 1em;
-}
-span:hover b{
-  display: block;
-}
-span b:hover{
-  display: none;
-}
-span:nth-child(odd){
-  background-color: #dfd;
-}
-</style>
+<html>
+  <head>
+    <title>LadyPHP</title>
+  </head>
+  <body>
+    <h1>LadyPHP</h1>
+    <div><?= $example ?></div>
+    <h2>Tokenizer</h2>
+    <pre><?= $out ?></pre>
+    <style>
+      html{
+        background-color: #fafafa;
+        font-size: 16px;
+        cursor: default;
+      }
+      body{
+        margin: 3em auto;
+        max-width: 50em;
+      }
+      pre{
+        padding: .5em;
+        border: 1px solid gray;
+        background-color: white;
+      }
+      span{
+        background-color: #fdd;
+        position: relative;
+      }
+      span:nth-child(even){
+        background-color: #dfd;
+      }
+      b{
+        display: none;
+        position: absolute;
+        z-index: 10;
+        background-color: #cdf;
+        top: 1.5em;
+        left: -1em;
+        font-weight: normal;
+        padding: .2em;
+        border: 1px solid #55d;
+        font-size: 95%;
+      }
+      span:hover{
+        background-color: #ffa;
+      }
+      span:hover b{
+        display: block;
+      }
+      span b:hover{
+        display: none;
+      }
+    </style>
+  </body>
+</html>

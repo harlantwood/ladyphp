@@ -1,5 +1,10 @@
 <?
 
+Name\Space\Fff()
+Fruit.apples()
+Fruit.apples
+Fruit.CONS
+
 class Fruit
   var apples = 0 # comment
   var numbers = [
