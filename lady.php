@@ -261,7 +261,7 @@ class Lady{
     foreach (token_get_all($php) as $token){
       if (!is_array($token)){
         $token = [0, $token];}
-      if (in_array($token[0], [T_COMMENT, T_ML_COMMENT, T_DOC_COMMENT, T_WHITESPACE])){
+      if (in_array($token[0], [T_COMMENT, T_DOC_COMMENT, T_WHITESPACE])){
         $space = "\n";}
       else{
         if (isset($set[substr($output, -1)]) || isset($set[$token[1]{0}])){
