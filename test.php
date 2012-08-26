@@ -2,7 +2,7 @@
 
 require_once('ndebugger.php');
 require_once('lady.php');
-Lady::includeFile('newlady.lady', 'newlady.php');
+//Lady::parseFile('lady.lady', 'lady.php');
 
 function h($s){
   return htmlspecialchars($s);
@@ -12,11 +12,14 @@ function h($s){
 NDebugger::enable();
 
 # parse example
-$example = NewLady::testFile('example.lady');
+$example = Lady::testFile('example.lady');
+ob_start();
+Lady::includeFile('example.lady');
+$run = ob_get_clean();
 
 # test tokenizer
 $out = null;
-$tokens = NewLady::tokenize(file_get_contents('example.lady'));
+$tokens = Lady::tokenize(file_get_contents('example.lady'));
 foreach($tokens as $n => $token){
   $out .= h($token['blank']) . '<span><b>';
   foreach($token as $key => $value){
@@ -33,6 +36,8 @@ foreach($tokens as $n => $token){
   <body>
     <h1>LadyPHP</h1>
     <div><?= $example ?></div>
+    <h2>Output</h2>
+    <div><?= $run ?></div>
     <h2>Tokenizer</h2>
     <pre><?= $out ?></pre>
     <style>
@@ -44,6 +49,7 @@ foreach($tokens as $n => $token){
       body{
         margin: 3em auto;
         max-width: 50em;
+        margin-bottom: 20em;
       }
       pre{
         padding: .5em;

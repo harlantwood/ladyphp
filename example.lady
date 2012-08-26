@@ -1,33 +1,37 @@
 <?
 
-Name\Space\Fff()
-Fruit.apples()
-Fruit.apples
-Fruit.CONS
-
+/**
+ * Example class
+ */
 class Fruit
-  var apples = 0 # comment
+
+  # variables
+  var apples = 0
   var numbers = [
     1: 'one',
     2: 'two',
     3: 'three',
   ]
 
-  /* comment */
+  // add some apples
   fn addApples(n = 1)
-    this.apples += n
+    if (n >= 0)
+      this.apples += n
     return this
 
+  /* count your apples */
   fn countApples()
     apples = this.apples
     out = 'You have '
     out .= isset(this.numbers[apples]) ? this.numbers[apples] : apples
-    if (this.apples == 1)
-      return out . ' apple.'
-    else
-      return "$out apples."
+    switch (apples)
+      case 1
+        return out . ' apple.'
+      default
+        return "$out apples."
 
 fruit = Fruit()
 fruit.addApples(1)
      .addApples(2)
-print fruit.countApples()
+?>
+<p><?=fruit.countApples()?></p>
