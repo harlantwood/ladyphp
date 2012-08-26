@@ -74,26 +74,27 @@ elseif ($action == 'test'){
     $ladyCompress = Lady::parseFile($lady, null, Lady::COMPRESS);
     print '<h3>LadyPHP (' . round(strlen($ladyContent) / 1024, 2) . ' kB)</h3>' .
           '<pre class="small">' . htmlspecialchars($ladyContent) . '</pre>' .
-          '<h3>Preserve (' . round(strlen($ladyPreserve) / 1024, 2) . ' kB)</h3>' .
+          '<h3>PHP (' . round(strlen($ladyPreserve) / 1024, 2) . ' kB)</h3>' .
           '<pre class="small">' . htmlspecialchars($ladyPreserve) . '</pre>' .
-          '<h3>Compress (' . round(strlen($ladyCompress) / 1024, 2) . ' kB)</h3>' .
+          '<h3>Compressed PHP (' . round(strlen($ladyCompress) / 1024, 2) . ' kB)</h3>' .
           '<pre class="small">' . htmlspecialchars($ladyCompress) . '</pre>';
 
   }
 }
 
 $content = ob_get_clean();
-$menu = explode(' ', 'example test compile use');
+$menu = explode(' ', 'example compile test use');
 
 ?>
 <head><title>LadyPHP: <?=$action?></title></head>
 <body>
 
 
+<div class="bar"></div>
 <div class="box">
   <div class="menu">
     <?foreach($menu as $item):?>
-      <a href="?<?=$item?>"><?=$item?></a>
+      <a href="?<?=$item?>" class="<?= ($item == $action) ? 'selected' : null ?>"><?=$item?></a>
     <?endforeach?>
   </div>
 
@@ -115,10 +116,12 @@ $menu = explode(' ', 'example test compile use');
 </div>
 
 <style>
-  body {max-width: 48em; margin: 0 auto; margin-bottom: 10em; font-size: 14px; background-color:#eee}
-  .box { background-color: white; position: relative; border: 1px solid #ccc}
-  .page { padding: 3em; background-color: white}
-  .menu {position: fixed; width: 46em; background-color: #222;padding: .7em 1em; z-index: 1; margin: -1px}
+  body {max-width: 48em; margin: 0 auto; font-size: 14px; background-color:#fafafa}
+  .box {background-color: white; position: relative; border: 1px solid #ccc}
+  .page {min-height: 5em; padding: 3em; margin-top: 1em; background-color: white}
+  .bar {position: fixed; background-color: #222; width: 200%; height: 2.6em; margin-left: -50%}
+  .menu {position: fixed; width: 46em; background-color: #222; padding: .7em 1em; z-index: 1; margin: -1px}
+  .selected {color: white}
   pre {background-color: #fbfbfb; border: 1px solid #aaa; padding: .5em 1em}
   .small {max-height: 20em; overflow: hidden}
   .small:hover {background-color: #f8f8f8; overflow: auto}
@@ -129,10 +132,11 @@ $menu = explode(' ', 'example test compile use');
   a:hover {color: #fff; text-decoration: underline}
   hr {display:none}
   .clear {clear: both}
-  .token {background-color: #fdd; position: relative}
-  .token:nth-child(even) {background-color: #dfd}
+  pre:hover .token {background-color: #fdd; position: relative}
+  pre:hover .token:nth-child(even) {background-color: #dfd}
   .tooltip {display: none; position: absolute; z-index: 10; background-color: #cdf; top: 1.5em; left: -1em; font-weight: normal; padding: .2em; border: 1px solid #55d; font-size: 95%}
   .token:hover {background-color: #ffa}
   .token:hover .tooltip {display: block}
   .token .tooltip:hover {display: none}
+  .token {-webkit-transition: background .5s; -moz-transition: background .5s; transition: background .5s}
 </style>
