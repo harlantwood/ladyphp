@@ -25,17 +25,17 @@ if ($action == 'compile'){
   $info[] = "Compiling <b>$lady</b> to <b>$newPhp</b> with <b>$php</b>";
   file_put_contents($newPhp, Lady::parseFile($lady, null, $style));
   $ok[] = 'Compiled';
-  //print '<meta http-equiv="refresh" content="1;url=?test">';
+  //echo '<meta http-equiv="refresh" content="1;url=?test">';
 }
 elseif ($action == 'use'){
   if (!is_file($newPhp))
-    $error[] =  "<b>$newPhp</b> not found";
+    $error[] = "<b>$newPhp</b> not found";
   elseif (file_get_contents($newPhp) == file_get_contents($php))
-    $error[] =  "<b>$newPhp</b> is same as <b>$php</b>";
+    $error[] = "<b>$newPhp</b> is same as <b>$php</b>";
   else {
     rename($php, 'lady-' . time() . '.php');
     rename($newPhp, $php);
-    $ok[] =  "<b>$newPhp</b> moved to <b>$php<b>";
+    $ok[] = "<b>$newPhp</b> moved to <b>$php<b>";
   }
 }
 elseif ($action == 'example'){
@@ -43,21 +43,29 @@ elseif ($action == 'example'){
     $error[] = "File <b>$example</b> not found";
   else {
     require($php);
-    # tokenizer
-    $tokens = Lady::tokenize(file_get_contents($example));
-    print '<h3>LadyPHP</h3><pre>';
-    foreach($tokens as $n => $token){
-      print htmlspecialchars($token['blank']) . '<span class="token"><div class="tooltip">';
-      foreach($token as $key => $value){
-        print htmlspecialchars($key) . ': ' . htmlspecialchars(var_export($value, true)) . '<br>';
-      }
-      print '</div>' . htmlspecialchars($token['str']) . '</span>';
-    }
-    # php
-    print '</pre><h3>PHP</h3><pre class="small">' . htmlspecialchars(Lady::parseFile($example)) . '</pre>';
+    echo '<h3>LadyPHP (hover code to show PHP)</h3><div class="switch"><pre>' . htmlspecialchars(file_get_contents($example)) . '</pre>';
+    echo '<pre>' . htmlspecialchars(Lady::parseFile($example)) . '</pre></div>';
     ob_start();
     Lady::includeFile($example);
-    print '<h3>Output</h3><pre>' . htmlspecialchars(ob_get_clean()) . '</pre>';
+    echo '<h3>Output</h3><pre>' . htmlspecialchars(ob_get_clean()) . '</pre>';
+  }
+}
+elseif ($action == 'tokens'){
+  if (!is_file($example))
+    $error[] = "File <b>$example</b> not found";
+  else {
+    require($php);
+    $tokens = Lady::tokenize(file_get_contents($example));
+    echo '<h3>LadyPHP (hover tokens to show info)</h3><pre class="tokenBox">';
+    foreach($tokens as $n => $token){
+      $token['name'] = token_name($token['type']);
+      ksort($token);
+      echo htmlspecialchars($token['blank']) . '<span class="token"><span class="tooltip">';
+      foreach($token as $key => $value){
+        echo htmlspecialchars($key) . ': ' . htmlspecialchars(var_export($value, true)) . '<br>';
+      }
+      echo '</span>' . htmlspecialchars($token['str']) . '</span>';
+    }
   }
 }
 elseif ($action == 'test'){
@@ -72,71 +80,68 @@ elseif ($action == 'test'){
     $ladyContent = file_get_contents($lady);
     $ladyPreserve = Lady::parseFile($lady);
     $ladyCompress = Lady::parseFile($lady, null, Lady::COMPRESS);
-    print '<h3>LadyPHP (' . round(strlen($ladyContent) / 1024, 2) . ' kB)</h3>' .
-          '<pre class="small">' . htmlspecialchars($ladyContent) . '</pre>' .
-          '<h3>PHP (' . round(strlen($ladyPreserve) / 1024, 2) . ' kB)</h3>' .
-          '<pre class="small">' . htmlspecialchars($ladyPreserve) . '</pre>' .
-          '<h3>Compressed PHP (' . round(strlen($ladyCompress) / 1024, 2) . ' kB)</h3>' .
-          '<pre class="small">' . htmlspecialchars($ladyCompress) . '</pre>';
-
+    echo '<h3>LadyPHP (' . round(strlen($ladyContent) / 1024, 2) . ' kB)</h3>' .
+         '<pre class="small">' . htmlspecialchars($ladyContent) . '</pre>' .
+         '<h3>PHP (' . round(strlen($ladyPreserve) / 1024, 2) . ' kB)</h3>' .
+         '<pre class="small">' . htmlspecialchars($ladyPreserve) . '</pre>' .
+         '<h3>Compressed PHP (' . round(strlen($ladyCompress) / 1024, 2) . ' kB)</h3>' .
+         '<pre class="small">' . htmlspecialchars($ladyCompress) . '</pre>';
   }
 }
 
 $content = ob_get_clean();
-$menu = explode(' ', 'example compile test use');
+$menu = explode(' ', 'example tokens compile test use');
 
-?>
-<head><title>LadyPHP: <?=$action?></title></head>
-<body>
-
-
-<div class="bar"></div>
-<div class="box">
-  <div class="menu">
-    <?foreach($menu as $item):?>
-      <a href="?<?=$item?>" class="<?= ($item == $action) ? 'selected' : null ?>"><?=$item?></a>
-    <?endforeach?>
-  </div>
-
-  <div class="page">
-  <?foreach($info as $item):?>
-    <div class="info"><?=$item?></div>
-  <?endforeach?>
-
-  <?foreach($error as $item):?>
-    <div class="error"><?=$item?></div>
-  <?endforeach?>
-
-  <?foreach($ok as $item):?>
-    <div class="ok"><?=$item?></div>
-  <?endforeach?>
-
-  <?=$content?>
-  </div>
-</div>
-
-<style>
-  body {max-width: 48em; margin: 0 auto; font-size: 14px; background-color:#fafafa}
-  .box {background-color: white; position: relative; border: 1px solid #ccc}
-  .page {min-height: 5em; padding: 3em; margin-top: 1em; background-color: white}
-  .bar {position: fixed; background-color: #222; width: 200%; height: 2.6em; margin-left: -50%}
-  .menu {position: fixed; width: 46em; background-color: #222; padding: .7em 1em; z-index: 1; margin: -1px}
-  .selected {color: white}
-  pre {background-color: #fbfbfb; border: 1px solid #aaa; padding: .5em 1em}
-  .small {max-height: 20em; overflow: hidden}
-  .small:hover {background-color: #f8f8f8; overflow: auto}
-  .info, .error, .ok {background-color: #def; padding: .4em 1em; margin: .3em}
-  .error {background-color: #fdd}
-  .ok {background-color: #dfd}
-  a {color: #cdf; font-weight:bold; text-decoration: none; margin: .5em}
-  a:hover {color: #fff; text-decoration: underline}
-  hr {display:none}
-  .clear {clear: both}
-  pre:hover .token {background-color: #fdd; position: relative}
-  pre:hover .token:nth-child(even) {background-color: #dfd}
-  .tooltip {display: none; position: absolute; z-index: 10; background-color: #cdf; top: 1.5em; left: -1em; font-weight: normal; padding: .2em; border: 1px solid #55d; font-size: 95%}
-  .token:hover {background-color: #ffa}
-  .token:hover .tooltip {display: block}
-  .token .tooltip:hover {display: none}
-  .token {-webkit-transition: background .5s; -moz-transition: background .5s; transition: background .5s}
-</style>
+?><!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>LadyPHP - <?=$action?></title>
+    <style>
+      html {font-size: 14px; background-color:#f5f5f5; font-family: 'Droid Sans', 'Tahoma', 'sans'}
+      body {max-width: 50em; margin: 0 auto}
+      .box {background-color: white; position: relative; border: 1px solid #ccc}
+      .page {padding: 3em; margin-top: 1em; background-color: white}
+      .menu {position: fixed; width: 48em; background-color: #f5f5f5; padding: .7em 1em; z-index: 1; margin: -1px; border-bottom: 1px solid #ccc}
+      pre {background-color: #fbfbfb; border: 1px solid #aaa; padding: .5em 1em; overflow: auto}
+      .small {max-height: 20em; overflow: hidden}
+      .small:hover {overflow: auto}
+      .info, .error, .ok {background-color: #bef; padding: .4em 1em; margin: .3em}
+      .error {background-color: #fbb}
+      .ok {background-color: #df6}
+      *:focus {outline: none}
+      a {color: #09f; font-weight:bold; text-decoration: none; margin: .2em; padding: .3em}
+      a:hover {background-color: #48f; color: white}
+      .selected {color: black}
+      hr {display:none}
+      .clear {clear: both}
+      .switch {position: relative}
+      .switch pre:last-child {position: absolute; left: 1px; top: 1px; margin: 0; border: none; display: none}
+      .switch:hover pre:last-child {display: block}
+      .tokenBox {overflow: visible}
+      .token {background-color: #df6; position: relative}
+      .token:nth-child(even) {background-color: #bef}
+      .tooltip {display: none; position: absolute; z-index: 10; background-color: #ffd; top: 1.5em; left: -1em; font-weight: normal; padding: .2em; border: 1px solid #cc0; font-size: 95%}
+      .token:hover {background-color: #ff5}
+      .token:hover .tooltip {display: block}
+      .token .tooltip:hover {display: none}
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div class="menu">
+        <? foreach($menu as $item){ ?>
+          <a href="?<?php echo $item ?>" class="<?php echo ($item == $action) ? 'selected' : null ?>"><?php echo $item ?></a>
+        <? } ?>
+      </div>
+      <div class="page">
+        <? foreach(['info', 'error', 'ok'] as $type){ ?>
+          <? foreach($$type as $item){ ?>
+            <div class="<?php echo $type ?>"><?php echo $item ?></div>
+          <? } ?>
+        <? } ?>
+        <?php echo $content ?>
+      </div>
+    </div>
+  </body>
+</html>
