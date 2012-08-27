@@ -244,7 +244,7 @@ class Lady{
 
   # ---------------------------------------------
   # compress
-  # strip comments and compress php code
+  # remove comments and whitespaces from PHP code
   # ---------------------------------------------
   static function compress($php){
     $space = $output = null;
