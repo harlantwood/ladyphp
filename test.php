@@ -25,7 +25,6 @@ if ($action == 'compile'){
   $info[] = "Compiling <b>$lady</b> to <b>$newPhp</b> with <b>$php</b>";
   file_put_contents($newPhp, Lady::parseFile($lady, null, $style));
   $ok[] = 'Compiled';
-  //echo '<meta http-equiv="refresh" content="1;url=?test">';
 }
 elseif ($action == 'use'){
   if (!is_file($newPhp))
@@ -96,7 +95,7 @@ $menu = explode(' ', 'example tokens compile test use');
 <html>
   <head>
     <meta charset="utf-8">
-    <title>LadyPHP - <?=$action?></title>
+    <title>LadyPHP - <?php echo $action?></title>
     <style>
       html {font-size: 14px; background-color:#f5f5f5; font-family: 'Droid Sans', 'Tahoma', 'sans'}
       body {max-width: 50em; margin: 0 auto}
@@ -130,16 +129,16 @@ $menu = explode(' ', 'example tokens compile test use');
   <body>
     <div class="box">
       <div class="menu">
-        <? foreach($menu as $item){ ?>
+        <?php foreach($menu as $item){ ?>
           <a href="?<?php echo $item ?>" class="<?php echo ($item == $action) ? 'selected' : null ?>"><?php echo $item ?></a>
-        <? } ?>
+        <?php } ?>
       </div>
       <div class="page">
-        <? foreach(['info', 'error', 'ok'] as $type){ ?>
-          <? foreach($$type as $item){ ?>
+        <?php foreach(['info', 'error', 'ok'] as $type){ ?>
+          <?php foreach($$type as $item){ ?>
             <div class="<?php echo $type ?>"><?php echo $item ?></div>
-          <? } ?>
-        <? } ?>
+          <?php } ?>
+        <?php } ?>
         <?php echo $content ?>
       </div>
     </div>
