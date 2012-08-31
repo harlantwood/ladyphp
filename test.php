@@ -21,7 +21,7 @@ foreach ($_GET as $k => $v){
 ob_start();
 
 if ($action == 'compile'){
-  require($php);
+  require_once $php;
   $info[] = "Compiling <b>$lady</b> to <b>$newPhp</b> with <b>$php</b>";
   file_put_contents($newPhp, Lady::parseFile($lady, null, $style));
   $ok[] = 'Compiled';
@@ -41,7 +41,12 @@ elseif ($action == 'example'){
   if (!is_file($example))
     $error[] = "File <b>$example</b> not found";
   else {
-    require($php);
+    if (is_file($newPhp) && file_get_contents($newPhp) != file_get_contents($php))
+      $compiler = $newPhp;
+    else
+      $compiler = $php;
+    $info[] = "Compiled with <b>$compiler</b>";
+    require_once $compiler;
     echo '<h3>LadyPHP (hover code to show PHP)</h3><div class="switch"><pre>' . htmlspecialchars(file_get_contents($example)) . '</pre>';
     echo '<pre>' . htmlspecialchars(Lady::parseFile($example)) . '</pre></div>';
     ob_start();
@@ -53,7 +58,12 @@ elseif ($action == 'tokens'){
   if (!is_file($example))
     $error[] = "File <b>$example</b> not found";
   else {
-    require($php);
+    if (is_file($newPhp) && file_get_contents($newPhp) != file_get_contents($php))
+      $compiler = $newPhp;
+    else
+      $compiler = $php;
+    $info[] = "Compiled with <b>$compiler</b>";
+    require_once $compiler;
     $tokens = Lady::tokenize(file_get_contents($example));
     echo '<h3>LadyPHP (hover tokens to show info)</h3><pre class="tokenBox">';
     foreach($tokens as $n => $token){
@@ -71,7 +81,7 @@ elseif ($action == 'test'){
   if (!is_file($newPhp))
     $error[] = "File <b>$newPhp</b> not found";
   else {
-    require($newPhp);
+    require_once $newPhp;
     if (Lady::parseFile($lady, null, $style) == file_get_contents($newPhp))
       $ok[] = "Testing <b>$newPhp</b>: output is same as source code";
     else
@@ -87,9 +97,32 @@ elseif ($action == 'test'){
          '<pre class="small">' . htmlspecialchars($ladyCompress) . '</pre>';
   }
 }
+elseif ($action == 'format'){
+  require_once 'lady.php';
+  $max = [0, 0];
+  $sources[] = explode("\n", trim(file_get_contents($example)));
+  $sources[] = explode("\n", trim(Lady::parseFile($example)));
+  $out = null;
+  foreach ($sources as $i => $source){
+    foreach ($source as $n => $line){
+      if ($i == 1 && $n == 0)
+        $line = $sources[1][0] = str_replace(Lady::HEAD, '', $line);
+      $max[$i] = max($max[$i], mb_strlen($line));
+    }
+  }
+  foreach ($sources[0] as $n => $line){
+    $line = sprintf('    %-' . $max[0] . 's | %-' . $max[1] . "s", $line, $sources[1][$n]);
+    $out .= rtrim($line) . "\n";
+  }
+  ob_start();
+  Lady::includeFile($example);
+  $result = ob_get_clean();
+  $text = "## Example\n\n$out\n#### Output\n\n    $result";
+  echo '<pre>' . htmlspecialchars($text) . '</pre>';
+}
 
 $content = ob_get_clean();
-$menu = explode(' ', 'example tokens compile test use');
+$menu = explode(' ', 'example tokens compile test use format');
 
 ?><!DOCTYPE html>
 <html>
