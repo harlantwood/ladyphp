@@ -8,6 +8,11 @@
 # or modified copies of this license document, and changing
 # it is allowed as long as the name is changed.
 
+# -----------------------------------------------
+# Lady
+# parse LadyPHP to PHP code
+# handle file cache
+# -----------------------------------------------
 class Lady{
 
   # ---------------------------------------------
@@ -203,7 +208,7 @@ class Lady{
     if (!is_dir(dirname($cacheFile))){
       mkdir(dirname($cacheFile), 0755, true);}
     if (!is_file($cacheFile) || filemtime($cacheFile) <= filemtime($file) || $flags & self::NOCACHE){
-      file_put_contents($cacheFile, self::parseFile($file, null, $flags));}
+      file_put_contents($cacheFile, self::parseFile($file, false, $flags));}
     return $cacheFile;}
 
   # ---------------------------------------------
@@ -211,7 +216,7 @@ class Lady{
   # load file and parse it
   # ---------------------------------------------
   static function parseFile($file, $cacheFile = null, $flags = 0){
-    if ($cacheFile){
+    if (!empty($cacheFile)){
       return file_get_contents(self::cacheFile($file, $cacheFile, $flags));}
     else{
       return self::parse(file_get_contents($file), $flags);}}
@@ -259,4 +264,79 @@ class Lady{
           $space = null;}
         $output .= $space . $token[1];
         $space = null;}}
-    return $output;}}
+    return $output;}
+
+  # ---------------------------------------------
+  # register
+  # wrapper for LadyStream.register()
+  # ---------------------------------------------
+  static function register($cacheDir = null){
+    return LadyStream::register($cacheDir);}}
+
+# -----------------------------------------------
+# LadyStream
+# stream wrapper for lady://
+# -----------------------------------------------
+class LadyStream{
+
+  # ---------------------------------------------
+  # variables
+  # ---------------------------------------------
+  var $buffer;
+  var $position;
+  var $file;
+  var $cacheFile;
+  static $cacheDir;
+
+  # ---------------------------------------------
+  # register
+  # bind wrapper to lady://
+  # ---------------------------------------------
+  static function register($cacheDir = null){
+    self::$cacheDir = $cacheDir;
+    if (in_array('lady', stream_get_wrappers())){
+      stream_wrapper_unregister('lady');}
+    return stream_wrapper_register('lady', __CLASS__);}
+
+  # ---------------------------------------------
+  # stream_open
+  # ---------------------------------------------
+  function stream_open($path){
+    $this->file = stream_resolve_include_path(substr($path, 7));
+    $this->cacheFile = false;
+    if (!empty(self::$cacheDir)){
+      $this->cacheFile = self::$cacheDir
+        . '/' . preg_replace(';/;', '_', $this->file)
+        . '-' . md5($this->file) . '.php';}
+    $this->buffer = Lady::parseFile($this->file, $this->cacheFile);
+    $this->position = 0;
+    return true;}
+
+  # ---------------------------------------------
+  # stream_read
+  # ---------------------------------------------
+  function stream_read($count){
+    $out = substr($this->buffer, $this->position, $count);
+    $this->position += $count;
+    return $out;}
+
+  # ---------------------------------------------
+  # stream_eof
+  # ---------------------------------------------
+  function stream_eof(){
+    return $this->position >= strlen($this->buffer);}
+
+  # ---------------------------------------------
+  # stream_stat
+  # ---------------------------------------------
+  function stream_stat(){
+    return [
+      'size' => strlen($this->buffer),
+      'mode' => 0100644,  # it's a file
+    ];}
+
+  # ---------------------------------------------
+  # url_stat
+  # ---------------------------------------------
+  function url_stat(){
+    return $this->stream_stat();}}
