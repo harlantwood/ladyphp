@@ -59,6 +59,7 @@ else
         padding: 1em .8em;
         background: white;
         border: 1px solid #aaa;
+        border-radius: 4px;
       }
       a{
         float: right;
