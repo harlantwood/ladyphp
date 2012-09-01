@@ -7,8 +7,7 @@
 
 # -----------------------------------------------
 # Lady
-# parse LadyPHP to PHP code
-# handle file cache
+# parse code to PHP
 # -----------------------------------------------
 class Lady
 
@@ -25,9 +24,10 @@ class Lady
   # bind LadyStream wrapper to lady://
   # ---------------------------------------------
   static fn register(cacheDir = null)
-    if (cacheDir && !is_dir(cacheDir))
-      mkdir(cacheDir, 0755, true)
-    LadyStream.cacheDir = realpath(cacheDir)
+    if (cacheDir)
+      if (!is_dir(cacheDir))
+        mkdir(cacheDir, 0755, true)
+      LadyStream.cacheDir = realpath(cacheDir)
     if (in_array('lady', stream_get_wrappers()))
       stream_wrapper_unregister('lady')
     return stream_wrapper_register('lady', 'LadyStream')
@@ -41,16 +41,22 @@ class Lady
 
   # ---------------------------------------------
   # testFile
-  # parse file and show input and output as html
+  # parse file and return input and output as html
   # ---------------------------------------------
   static fn testFile(file)
-    td = '<td valign="top"><pre style="border:1px solid gray;background-color:#fff;'
-       . 'width:30em;padding:.2em;color:black;font-size:13px;overflow:auto">'
+    html = '<div class="ladyTest"><p><b>' . basename(file) . '</b> (hover to show PHP)</p><div>'
     foreach ([file_get_contents(file), self.parseFile(file)] as i: text)
-      html = (i == 0) ? '<b>' . file . '</b><table><tr>' . td : html . '</pre></td>' . td
+      html .= (i == 0) ? '<pre>' : '</pre><pre>'
       foreach (explode("\n", text) as n: line)
-        html .= sprintf("<span style=\"color:gray\">%3d</span> %s\n", n, htmlspecialchars(line))
-    return html . '</pre></td></tr></table>'
+        html .= sprintf("<span>%3d</span> %s\n", n, htmlspecialchars(line))
+    return html . '</pre></div></div><style>'
+      . '.ladyTest div {position:relative;border:1px solid #aaa;font-size:13px;overflow:auto}'
+      . '.ladyTest pre {background:#fff;color:#222}'
+      . '.ladyTest pre:last-child {position:absolute;display:none;top:0;left:0}'
+      . '.ladyTest div:hover pre:last-child {display:block}'
+      . '.ladyTest p {color:#888;font-size:14px}'
+      . '.ladyTest p b {color:#000}'
+      . '.ladyTest span {color:#aaa}</style>'
 
   # ---------------------------------------------
   # parse
@@ -109,9 +115,8 @@ class Lady
         i++
 
       # add semicolon and brackets
-      if (isLast
-          && !in_array(str, explode(' ', self.JOINING . ' ' . self.ENDING))
-          && type != T_CLOSE_TAG)
+      if (isLast && type != T_CLOSE_TAG
+          && !in_array(str, explode(' ', self.JOINING . ' ' . self.ENDING)))
 
         # sort list of closing brackets
         closingBrackets = array_unique(closingBrackets)
@@ -131,6 +136,7 @@ class Lady
 
         # next line is indented
         elseif (tokens[n + 1]['indent'] > indent)
+
           # add opening bracket
           if (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING . ' ' . self.CONTINUING)))
             str .= '{'
@@ -237,6 +243,8 @@ class LadyStream
   fn stream_open(path)
     this.position = 0
     this.file = stream_resolve_include_path(substr(path, 7))
+    if (!this.file)
+      return false
     if (!self.cacheDir)
       this.buffer = Lady.parseFile(this.file)
     else

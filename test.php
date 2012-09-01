@@ -106,7 +106,7 @@ elseif ($action == 'format'){
     }
   }
   foreach ($sources[0] as $n => $line){
-    $line = sprintf('    %-' . $max[0] . 's | %-' . $max[1] . "s", $line, $sources[1][$n]);
+    $line = sprintf('    %-' . $max[0] . 's  |  %-' . $max[1] . "s", $line, $sources[1][$n]);
     $out .= rtrim($line) . "\n";
   }
   ob_start();
