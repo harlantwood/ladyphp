@@ -6,8 +6,7 @@ NDebugger::enable();
 $lady = 'lady.lady';
 $php = 'lady.php';
 $newPhp = 'lady_new.php';
-$example = 'example.lady';
-$style = 0;
+$example = __DIR__ . '/example.lady';
 $info = array();
 $error = array();
 $ok = array();
@@ -23,7 +22,7 @@ ob_start();
 if ($action == 'compile'){
   require_once $php;
   $info[] = "Compiling <b>$lady</b> to <b>$newPhp</b> with <b>$php</b>";
-  file_put_contents($newPhp, Lady::parseFile($lady, null, $style));
+  file_put_contents($newPhp, Lady::parseFile($lady));
   $ok[] = 'Compiled';
 }
 elseif ($action == 'use'){
@@ -50,7 +49,8 @@ elseif ($action == 'example'){
     echo '<h3>LadyPHP (hover code to show PHP)</h3><div class="switch"><pre>' . htmlspecialchars(file_get_contents($example)) . '</pre>';
     echo '<pre>' . htmlspecialchars(Lady::parseFile($example)) . '</pre></div>';
     ob_start();
-    Lady::includeFile($example);
+    Lady::register();
+    require 'lady://' . $example;
     echo '<h3>Output</h3><pre>' . htmlspecialchars(ob_get_clean()) . '</pre>';
   }
 }
@@ -82,19 +82,16 @@ elseif ($action == 'test'){
     $error[] = "File <b>$newPhp</b> not found";
   else {
     require_once $newPhp;
-    if (Lady::parseFile($lady, null, $style) == file_get_contents($newPhp))
+    if (Lady::parseFile($lady) == file_get_contents($newPhp))
       $ok[] = "Testing <b>$newPhp</b>: output is same as source code";
     else
       $error[] = "Testing <b>$newPhp</b>: output is not same as source code";
-    $ladyContent = file_get_contents($lady);
-    $ladyPreserve = Lady::parseFile($lady);
-    $ladyCompress = Lady::parseFile($lady, null, Lady::COMPRESS);
-    echo '<h3>LadyPHP (' . round(strlen($ladyContent) / 1024, 2) . ' kB)</h3>' .
-         '<pre class="small">' . htmlspecialchars($ladyContent) . '</pre>' .
-         '<h3>PHP (' . round(strlen($ladyPreserve) / 1024, 2) . ' kB)</h3>' .
-         '<pre class="small">' . htmlspecialchars($ladyPreserve) . '</pre>' .
-         '<h3>Compressed PHP (' . round(strlen($ladyCompress) / 1024, 2) . ' kB)</h3>' .
-         '<pre class="small">' . htmlspecialchars($ladyCompress) . '</pre>';
+    $ladyCode = file_get_contents($lady);
+    $phpCode = Lady::parseFile($lady);
+    echo '<h3>LadyPHP</h3>' .
+         '<pre class="small">' . htmlspecialchars($ladyCode) . '</pre>' .
+         '<h3>PHP</h3>' .
+         '<pre class="small">' . htmlspecialchars($phpCode) . '</pre>';
   }
 }
 elseif ($action == 'format'){
@@ -105,8 +102,6 @@ elseif ($action == 'format'){
   $out = null;
   foreach ($sources as $i => $source){
     foreach ($source as $n => $line){
-      if ($i == 1 && $n == 0)
-        $line = $sources[1][0] = str_replace(Lady::HEAD, '', $line);
       $max[$i] = max($max[$i], mb_strlen($line));
     }
   }
@@ -115,7 +110,8 @@ elseif ($action == 'format'){
     $out .= rtrim($line) . "\n";
   }
   ob_start();
-  Lady::includeFile($example);
+  Lady::register();
+  require 'lady://' . $example;
   $result = ob_get_clean();
   $text = "## Example\n\n$out\n#### Output\n\n    $result";
   echo '<pre>' . htmlspecialchars($text) . '</pre>';
@@ -131,13 +127,12 @@ $menu = explode(' ', 'example tokens compile test use format');
     <title>LadyPHP - <?php echo $action?></title>
     <style>
       html {font-size: 14px; background-color:#f5f5f5; font-family: 'Droid Sans', 'Tahoma', 'sans'}
-      body {max-width: 50em; margin: 0 auto}
+      body {max-width: 50em; margin: 0 auto; margin-bottom: 10em;}
       .box {background-color: white; position: relative; border: 1px solid #ccc}
       .page {padding: 3em; margin-top: 1em; background-color: white}
       .menu {position: fixed; width: 48em; background-color: #f5f5f5; padding: .7em 1em; z-index: 1; margin: -1px; border-bottom: 1px solid #ccc}
       pre {background-color: #fbfbfb; border: 1px solid #aaa; padding: .5em 1em; overflow: auto}
-      .small {max-height: 20em; overflow: hidden}
-      .small:hover {overflow: auto}
+      .small {max-height: 20em; overflow: auto}
       .info, .error, .ok {background-color: #bef; padding: .4em 1em; margin: .3em}
       .error {background-color: #fbb}
       .ok {background-color: #df6}
