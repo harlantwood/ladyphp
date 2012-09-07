@@ -1,6 +1,6 @@
 <?php
-require_once 'ndebugger.php';
-NDebugger::enable();
+require_once 'sdebug.php';
+sdebug();
 
 # define
 define('LADY',    __DIR__ . '/lady.lady');
@@ -39,9 +39,9 @@ Lady::register();
 if ($newCode == file_get_contents(PHP))
   $tpl->msg = 'lady.php is up to date <a href="'. basename(__FILE__) . '">reload</a>';
 elseif (Lady::parseFile(LADY) == OldLady::parseFile(LADY))
-  $tpl->msg = 'lady.lady creates <b>same</b> output as lady.php <a href="?save">save it</a>';
+  $tpl->msg = 'lady.lady creates <b>same</b> output as lady.php <a href="?save">save</a>';
 else
-  $tpl->msg = 'lady.lady creates <b>different</b> output than lady.php <a href="?save">save it</a>';
+  $tpl->msg = 'lady.lady creates <b>different</b> output than lady.php <a href="?save">save anyway</a>';
 
 ?>
 <!DOCTYPE html>
@@ -50,12 +50,14 @@ else
     <title>LadyPHP demo</title>
     <style>
       body{
-        width: 30em;
+        width: 35em;
         margin: 2em auto;
         background: #fafafa;
+        font-family: 'Droid Sans', 'Tahoma', 'Arial', sans;
+        font-size: 16px;
       }
       .block{
-        margin: 1em;
+        margin: 1em 0;
         padding: 1em .8em;
         background: white;
         border: 1px solid #aaa;
@@ -71,9 +73,13 @@ else
         color: white;
         background: #e22;
       }
+      h1{
+        color: #444;
+      }
     </style>
   </head>
   <body>
+    <h1>LadyPHP demo</h1>
     <div class="block"><?php echo $tpl->msg ?></div>
     <div class="block"><?php echo $tpl->example ?></div>
   </body>
