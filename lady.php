@@ -78,6 +78,7 @@ class Lady{
 
     # process tokens
     foreach ($tokens as $n => $token){
+      $token = $tokens[$n];
       extract($token, EXTR_OVERWRITE | EXTR_REFS);
 
       # skip last dummy token
@@ -88,10 +89,11 @@ class Lady{
       if ($str == 'fn'){
         $str = 'function';}
 
-      # convert . to -> or ::
-      elseif ($str == '.'
-          && (!$hasBlank || !$tokens[$n + 1]['hasBlank'])){
-        if (preg_match(self::REGEX_CLASS, $tokens[$n - 1]['str'])){
+      # convert . to -> or :: and .. to .
+      elseif ($str == '.'){
+        if ($tokens[$n + 1]['str'] == '.'){
+          $tokens[$n + 1]['str'] = '';}
+        elseif (preg_match(self::REGEX_CLASS, $tokens[$n - 1]['str'])){
           $str = '::';}
         else{
           $str = '->';}}

@@ -7,7 +7,8 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making source 
 - optional `;` at end of line
 - variables doesn't have to be prefixed with `$`, but they must start with a lowercase letter
 - indent style, no need for `{` and `}`
-- `.` is converted to `->` or `::`, but not if it's surrounded by spaces
+- `.` is converted to `->` or `::`
+- `..` is converted to `.`
 - `:` is converted to `=>`, but only if there isn't space before it
 - `fn foo()` is converted to `function foo()`
 - `Foo\Bar()` is converted to `new Foo\Bar()`
@@ -47,7 +48,7 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making source 
                ? this.numbers[apples] : apples         |             ? $this->numbers[$apples] : $apples;
         switch (apples)                                |      switch ($apples){
           case 1                                       |        case 1:
-            return out . ' apple.'                     |          return $out . ' apple.';
+            return out .. ' apple.'                    |          return $out . ' apple.';
           default                                      |        default:
             return "$out apples."                      |          return "$out apples.";}}}
                                                        |
