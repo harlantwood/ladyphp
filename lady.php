@@ -16,7 +16,7 @@ class Lady{
   const REGEX_VARIABLE =   ';^[_a-z].*$;';
   const REGEX_NOVARIABLE = ';^(false|true|self|parent|null)$;';
   const JOINING = '&& || & | -> . + - , / * % = ? :';
-  const ENDING = '; { } ( [ <?';  # do not add ; { } after these
+  const ENDING = ' ; { } ( [ <?';  # do not add ; { } after these
   const CONTINUING = ') ]';  # line is continuing if starts with these
 
   var $buffer, $position, $filename, $cacheFile;
