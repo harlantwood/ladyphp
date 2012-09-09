@@ -43,6 +43,15 @@ elseif (Lady::parseFile(LADY) == OldLady::parseFile(LADY))
 else
   $tpl->msg = 'lady.lady creates <b>different</b> output than lady.php <a href="?save">save anyway</a>';
 
+# tokens
+$tpl->tokens = null;
+foreach(Lady::tokenize(file_get_contents(EXAMPLE)) as $n => $token){
+  $tpl->tokens .= htmlspecialchars($token['blank']) . '<span class="token"><span class="tooltip">';
+  foreach(array_merge(['name' => token_name($token['type'])], $token) as $key => $value)
+    $tpl->tokens .= htmlspecialchars($key) . ': ' . htmlspecialchars(var_export($value, true)) . '<br>';
+  $tpl->tokens .= '</span>' . htmlspecialchars($token['str']) . '</span>';
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,6 +61,7 @@ else
       body{
         width: 35em;
         margin: 2em auto;
+        margin-bottom: 10em;
         background: #fafafa;
         font-family: 'Droid Sans', 'Tahoma', 'Arial', sans;
         font-size: 16px;
@@ -76,11 +86,50 @@ else
       h1{
         color: #444;
       }
+      h4{
+        margin: 0;
+      }
+      .tokenBox {
+        background-color #ddd;
+        border: 1px solid #aaa;
+        font-size: 14px;
+        overflow: visible;
+        padding: .5em;
+      }
+      .token {
+        background-color: #df6;
+        position: relative;
+      }
+      .token:nth-child(even) {
+        background-color: #bef;
+      }
+      .tooltip {
+        display: none;
+        position: absolute;
+        z-index: 10;
+        background-color: #ffd;
+        top: 1.5em;
+        left: -1em;
+        font-weight: normal;
+        padding: .2em;
+        border: 1px solid #cc0;
+        font-size: 95%;
+      }
+      .token:hover {
+        background-color: #ff5;
+      }
+      .token:hover .tooltip {
+        display: block;
+      }
+      .token .tooltip:hover {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <h1>LadyPHP demo</h1>
     <div class="block"><?php echo $tpl->msg ?></div>
     <div class="block"><?php echo $tpl->example ?></div>
+    <div class="block"><p><b>tokens</b></p><pre class="tokenBox"><?php echo $tpl->tokens ?></pre></div>
   </body>
 </html>
