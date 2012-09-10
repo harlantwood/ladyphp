@@ -64,7 +64,6 @@ class Lady{
       . '.ladyTest p b {color:#000}'
       . '.ladyTest span {color:#aaa}</style>';}
 
-
   /**
    * Parses LadyPHP from string to PHP code
    * @param string
@@ -93,10 +92,11 @@ class Lady{
       elseif ($str == '.'){
         if ($tokens[$n + 1]['str'] == '.'){
           $tokens[$n + 1]['str'] = '';}
-        elseif (preg_match(self::REGEX_CLASS, $tokens[$n - 1]['str'])){
-          $str = '::';}
-        else{
-          $str = '->';}}
+        elseif (!$hasBlank || !$tokens[$n + 1]['hasBlank']){
+          if (preg_match(self::REGEX_CLASS, $tokens[$n - 1]['str'])){
+            $str = '::';}
+          else{
+            $str = '->';}}}
 
       # convert : to =>
       elseif ($str == ':' && !$hasBlank && !$isLast){

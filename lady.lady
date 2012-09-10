@@ -50,20 +50,19 @@ class Lady
    * @return string  PHP code
    */
   static fn testFile(filename)
-    html = '<div class="ladyTest"><p><b>' .. basename(filename) .. '</b> (hover to show PHP)</p><div>'
+    html = '<div class="ladyTest"><p><b>' . basename(filename) . '</b> (hover to show PHP)</p><div>'
     foreach ([file_get_contents(filename), self.parseFile(filename)] as i: text)
       html .= (i == 0) ? '<pre>' : '</pre><pre>'
       foreach (explode("\n", text) as n: line)
         html .= sprintf("<span>%3d</span> %s\n", n, htmlspecialchars(line))
-    return html .. '</pre></div></div><style>'
-      .. '.ladyTest div {position:relative;border:1px solid #aaa;font-size:13px;overflow:auto}'
-      .. '.ladyTest pre {background:#fff;color:#222}'
-      .. '.ladyTest pre:last-child {position:absolute;display:none;top:0;left:0}'
-      .. '.ladyTest div:hover pre:last-child {display:block}'
-      .. '.ladyTest p {color:#888;font-size:14px}'
-      .. '.ladyTest p b {color:#000}'
-      .. '.ladyTest span {color:#aaa}</style>'
-
+    return html . '</pre></div></div><style>'
+      . '.ladyTest div {position:relative;border:1px solid #aaa;font-size:13px;overflow:auto}'
+      . '.ladyTest pre {background:#fff;color:#222}'
+      . '.ladyTest pre:last-child {position:absolute;display:none;top:0;left:0}'
+      . '.ladyTest div:hover pre:last-child {display:block}'
+      . '.ladyTest p {color:#888;font-size:14px}'
+      . '.ladyTest p b {color:#000}'
+      . '.ladyTest span {color:#aaa}</style>'
 
   /**
    * Parses LadyPHP from string to PHP code
@@ -93,10 +92,11 @@ class Lady
       elseif (str == '.')
         if (tokens[n + 1]['str'] == '.')
           tokens[n + 1]['str'] = ''
-        elseif (preg_match(self.REGEX_CLASS, tokens[n - 1]['str']))
-          str = '::'
-        else
-          str = '->'
+        elseif (!hasBlank || !tokens[n + 1]['hasBlank'])
+          if (preg_match(self.REGEX_CLASS, tokens[n - 1]['str']))
+            str = '::'
+          else
+            str = '->'
 
       # convert : to =>
       elseif (str == ':' && !hasBlank && !isLast)
@@ -108,7 +108,7 @@ class Lady
           && tokens[n - 1]['str'] != '->'
           && preg_match(self.REGEX_VARIABLE, str)
           && !preg_match(self.REGEX_NOVARIABLE, str))
-        str = '$' .. str
+        str = '$' . str
 
       # add 'new' before 'Foo\Bar()'
       i = 0
@@ -120,13 +120,13 @@ class Lady
           && tokens[n - 1]['type'] != T_NEW)
         if (tokens[n + i]['type'] == T_STRING
             && tokens[n + i + 1]['str'] == '(')
-          str = 'new ' .. str
+          str = 'new ' . str
           break
         i++
 
       # add semicolon and brackets
       if (isLast && type != T_CLOSE_TAG
-          && !in_array(str, explode(' ', self.JOINING .. ' ' .. self.ENDING)))
+          && !in_array(str, explode(' ', self.JOINING . ' ' . self.ENDING)))
 
         # sort list of closing brackets
         closingBrackets = array_unique(closingBrackets)
@@ -148,7 +148,7 @@ class Lady
         elseif (tokens[n + 1]['indent'] > indent)
 
           # add opening bracket
-          if (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING .. ' ' .. self.CONTINUING)))
+          if (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING . ' ' . self.CONTINUING)))
             str .= '{'
             closingBrackets[] = indent
             openingBracket = false
@@ -157,7 +157,7 @@ class Lady
             openingBracket = indent
 
         # line doesn't continue
-        elseif (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING .. ' ' .. self.CONTINUING)))
+        elseif (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING . ' ' . self.CONTINUING)))
           # there is saved opening bracket
           if (openingBracket !== false
               && tokens[n + 1]['indent'] > openingBracket)
@@ -189,7 +189,7 @@ class Lady
     # glue code
     code = null
     foreach (tokens as token)
-      code .= token['blank'] .. token['str']
+      code .= token['blank'] . token['str']
 
     # return
     return code
@@ -231,7 +231,7 @@ class Lady
         token['indent'] = token['x'] = token['y'] = 0
         token['isFirst'] = true
       else
-        token['y'] = tokens[n - 1]['y'] + count(explode("\n", tokens[n - 1]['str'] .. token['blank'])) - 1
+        token['y'] = tokens[n - 1]['y'] + count(explode("\n", tokens[n - 1]['str'] . token['blank'])) - 1
         token['isFirst'] = tokens[n - 1]['isLast'] = (tokens[n - 1]['y'] != token['y'])
         token['x'] = mb_strlen(array_slice(explode("\n", token['blank']), -1)[0])
         token['x'] += !token['isFirst'] ? tokens[n - 1]['x'] + mb_strlen(tokens[n - 1]['str']) : null
@@ -256,8 +256,8 @@ class Lady
       if (!is_dir(self.cacheDir))
         mkdir(self.cacheDir, 0755, true)
       this.cacheFile = self.cacheDir
-        .. '/' .. preg_replace(';/;', '_', this.filename)
-        .. '-' .. md5(this.filename) .. '.php'
+        . '/' . preg_replace(';/;', '_', this.filename)
+        . '-' . md5(this.filename) . '.php'
       if (!is_file(this.cacheFile) || filemtime(this.cacheFile) <= filemtime(this.filename))
         this.buffer = self.parseFile(this.filename)
         file_put_contents(this.cacheFile, this.buffer)
