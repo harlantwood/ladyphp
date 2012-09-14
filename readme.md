@@ -14,6 +14,7 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making source 
 - `Foo\Bar()` is converted to `new Foo\Bar()`
 - optional `:` after `case ...` and `default`
 - `<?` and `<?=` are converted to `<?php` and `<?php echo`
+- `[` and `]` around arrays are converted to `array()`
 - original line numbers are preserved (handy for debugging)
 - Lady herself is written in Lady, use the source for reference
 
