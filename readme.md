@@ -30,11 +30,11 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making source 
                                                        |
     class Fruit                                        |  class Fruit{
       var apples = 0                                   |    var $apples = 0;
-      var numbers = [                                  |    var $numbers = [
+      var numbers = [                                  |    var $numbers = array(
         1: 'one',                                      |      1 => 'one',
         2: 'two',                                      |      2 => 'two',
         3: 'three'                                     |      3 => 'three'
-      ]                                                |    ];
+      ]                                                |    );
                                                        |
       fn addApples(n = 1)                              |    function addApples($n = 1){
         if (n >= 0)                                    |      if ($n >= 0){
