@@ -16,7 +16,7 @@ class Lady{
   const REGEX_VARIABLE =   ';^[_a-z].*$;';
   const REGEX_NOVARIABLE = ';^(false|true|self|parent|null)$;';
   const JOINING = '&& || & | -> . + - , / * % = ? :';
-  const ENDING = ' ; { } ( [ <?';  # do not add ; { } after these
+  const ENDING = ' ; { } ( array( [ <?';  # do not add ; { } after these
   const CONTINUING = ') ]';  # line is continuing if starts with these
 
   var $buffer, $position, $filename, $cacheFile;
@@ -51,7 +51,7 @@ class Lady{
    */
   static function testFile($filename){
     $html = '<div class="ladyTest"><p><b>' . basename($filename) . '</b> (hover to show PHP)</p><div>';
-    foreach ([file_get_contents($filename), self::parseFile($filename)] as $i => $text){
+    foreach (array(file_get_contents($filename), self::parseFile($filename)) as $i => $text){
       $html .= ($i == 0) ? '<pre>' : '</pre><pre>';
       foreach (explode("\n", $text) as $n => $line){
         $html .= sprintf("<span>%3d</span> %s\n", $n, htmlspecialchars($line));}}
@@ -73,7 +73,9 @@ class Lady{
     $source = str_replace("\r", '', $source);
     $tokens = self::tokenize($source);
     $openingBracket = false;
-    $closingBrackets = [];
+    $closingBrackets = array();
+    $squareBrackets = 0;
+    $arrayBrackets = array();
 
     # process tokens
     foreach ($tokens as $n => $token){
@@ -84,8 +86,21 @@ class Lady{
       if ($n > count($tokens) - 2){
         break;}
 
+      # square brackets to array()
+      elseif ($str == '['){
+        $squareBrackets++;
+        if ($hasBlank || in_array($tokens[$n - 1]['str'], explode(' ', self::JOINING . ' ' . self::ENDING))){
+          $str = 'array(';
+          $arrayBrackets[$squareBrackets] = true;}}
+
+      elseif ($str == ']'){
+        if (isset($arrayBrackets[$squareBrackets]) && $arrayBrackets[$squareBrackets]){
+          $str = ')';
+          $arrayBrackets[$squareBrackets] = false;}
+        $squareBrackets--;}
+
       # convert 'fn' to 'function'
-      if ($str == 'fn'){
+      elseif ($str == 'fn'){
         $str = 'function';}
 
       # convert . to -> or :: and .. to .
@@ -137,7 +152,7 @@ class Lady{
         $i = 0;
         while (isset($tokens[$n - $i]['y'])
             && $tokens[$n - $i]['y'] == $y){
-          if (in_array($tokens[$n - $i]['type'], [T_CASE, T_DEFAULT])){
+          if (in_array($tokens[$n - $i]['type'], array(T_CASE, T_DEFAULT))){
             $isSwitch = true;
             break;}
           $i++;}
@@ -200,7 +215,7 @@ class Lady{
    * @return array
    */
   static function tokenize($source){
-    $tokens = [];
+    $tokens = array();
     $blank = null;
 
     # prepare tokens
@@ -208,12 +223,12 @@ class Lady{
 
       # convert to associative array
       if (is_array($token)){
-        $token = ['str' => $token[1], 'type' => $token[0]];}
+        $token = array('str' => $token[1], 'type' => $token[0]);}
       else{
-        $token = ['str' => $token, 'type' => null];}
+        $token = array('str' => $token, 'type' => null);}
 
       # save whitespaces and comments into tokens
-      if (in_array($token['type'], [T_COMMENT, T_DOC_COMMENT, T_WHITESPACE, T_INLINE_HTML])){
+      if (in_array($token['type'], array(T_COMMENT, T_DOC_COMMENT, T_WHITESPACE, T_INLINE_HTML))){
         $blank .= $token['str'];}
       else{
         $token['blank'] = $blank;
@@ -222,7 +237,7 @@ class Lady{
         $tokens[] = $token;}}
 
     # save remaining blank
-    $tokens[] = ['str' => null, 'type' => null, 'blank' => $blank, 'isLast' => true];
+    $tokens[] = array('str' => null, 'type' => null, 'blank' => $blank, 'isLast' => true);
 
     # get positions
     foreach ($tokens as $n => $token){
@@ -283,7 +298,7 @@ class Lady{
    * @return array
    */
   function stream_stat(){
-    return ['size' => strlen($this->buffer), 'mode' => 0100644];}
+    return array('size' => strlen($this->buffer), 'mode' => 0100644);}
 
   /**
    * @return array

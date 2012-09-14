@@ -16,7 +16,7 @@ class Lady
   const REGEX_VARIABLE =   ';^[_a-z].*$;'
   const REGEX_NOVARIABLE = ';^(false|true|self|parent|null)$;'
   const JOINING = '&& || & | -> . + - , / * % = ? :'
-  const ENDING = ' ; { } ( [ <?'  # do not add ; { } after these
+  const ENDING = ' ; { } ( array( [ <?'  # do not add ; { } after these
   const CONTINUING = ') ]'  # line is continuing if starts with these
 
   var buffer, position, filename, cacheFile
@@ -74,6 +74,8 @@ class Lady
     tokens = self.tokenize(source)
     openingBracket = false
     closingBrackets = []
+    squareBrackets = 0
+    arrayBrackets = []
 
     # process tokens
     foreach (tokens as n: token)
@@ -84,8 +86,21 @@ class Lady
       if (n > count(tokens) - 2)
         break
 
+      # square brackets to array()
+      elseif (str == '[')
+        squareBrackets++
+        if (hasBlank || in_array(tokens[n - 1]['str'], explode(' ', self.JOINING . ' ' . self.ENDING)))
+          str = 'array('
+          arrayBrackets[squareBrackets] = true
+
+      elseif (str == ']')
+        if (isset(arrayBrackets[squareBrackets]) && arrayBrackets[squareBrackets])
+          str = ')'
+          arrayBrackets[squareBrackets] = false
+        squareBrackets--
+
       # convert 'fn' to 'function'
-      if (str == 'fn')
+      elseif (str == 'fn')
         str = 'function'
 
       # convert . to -> or :: and .. to .
