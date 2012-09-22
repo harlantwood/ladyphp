@@ -41,17 +41,17 @@ class Lady{
    * @param string  filename
    * @return string  PHP code
    */
-  static function parseFile($filename){
-    return self::parse(file_get_contents($filename));}
+  static function parseFile($filename, $expanded = false){
+    return self::parse(file_get_contents($filename), $expanded);}
 
   /**
    * Parses file and returns input and output as html.
    * @param string  filename
    * @return string  PHP code
    */
-  static function testFile($filename){
+  static function testFile($filename, $expanded = false){
     $html = '<div class="ladyTest"><p><b>' . basename($filename) . '</b> (hover to show PHP)</p><div>';
-    foreach (array(file_get_contents($filename), self::parseFile($filename)) as $i => $text){
+    foreach (array(file_get_contents($filename), self::parseFile($filename, $expanded)) as $i => $text){
       $html .= ($i == 0) ? '<pre>' : '</pre><pre>';
       foreach (explode("\n", $text) as $n => $line){
         $html .= sprintf("<span>%3d</span> %s\n", $n, htmlspecialchars($line));}}
@@ -69,11 +69,12 @@ class Lady{
    * @param string
    * @return string  PHP code
    */
-  static function parse($source){
+  static function parse($source, $expanded = false){
     $source = str_replace("\r", '', $source);
     $tokens = self::tokenize($source);
     $openingBracket = false;
     $closingBrackets = array();
+    $closingIndentStr = array();
     $squareBrackets = 0;
     $arrayBrackets = array();
 
@@ -166,6 +167,7 @@ class Lady{
           if (!in_array($tokens[$n + 1]['str'], explode(' ', self::JOINING . ' ' . self::CONTINUING))){
             $str .= '{';
             $closingBrackets[] = $indent;
+            $closingIndentStr[$indent] = $indentStr;
             $openingBracket = false;}
           # save opening bracket
           else{
@@ -187,6 +189,8 @@ class Lady{
         if ($indent > $tokens[$n + 1]['indent']){
           while (isset($closingBrackets[0])
               && $closingBrackets[0] >= $tokens[$n + 1]['indent']){
+            if ($expanded){
+              $str .= "\n" . $closingIndentStr[$closingBrackets[0]];}
             $str .= '}';
             $closingBrackets = array_slice($closingBrackets, 1);}}}
 
@@ -250,7 +254,8 @@ class Lady{
         $token['isFirst'] = $tokens[$n - 1]['isLast'] = ($tokens[$n - 1]['y'] != $token['y']);
         $token['x'] = mb_strlen(array_slice(explode("\n", $token['blank']), -1)[0]);
         $token['x'] += !$token['isFirst'] ? $tokens[$n - 1]['x'] + mb_strlen($tokens[$n - 1]['str']) : null;
-        $token['indent'] = $token['isFirst'] ? $token['x'] : $tokens[$n - 1]['indent'];}
+        $token['indent'] = $token['isFirst'] ? $token['x'] : $tokens[$n - 1]['indent'];
+        $token['indentStr'] = $token['isFirst'] ? array_slice(explode("\n", $token['blank']), -1)[0] : $tokens[$n - 1]['indentStr'];}
       $tokens[$n] = $token;}
 
     return $tokens;}
@@ -309,6 +314,10 @@ class Lady{
 
 /**
  * Parses file from first command line argument.
+ * If first argument is '-e', use expanded syntax.
  */
 if (isset($argv[1]) && realpath($argv[0]) == realpath(__FILE__)){
-  echo Lady::parseFile($argv[1]);}
+  if (isset($argv[2]) && $argv[1] == '-e'){
+    echo Lady::parseFile($argv[2], true);}
+  else{
+    echo Lady::parseFile($argv[1]);}}

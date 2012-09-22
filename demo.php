@@ -33,7 +33,7 @@ if (isset($_GET['save'])){
 
 # example
 $tpl->example = Lady::testFile(EXAMPLE);
-Lady::register();
+$tpl->exampleExpanded = Lady::testFile(EXAMPLE, true);
 
 # test
 if ($newCode == file_get_contents(PHP))
@@ -130,6 +130,7 @@ foreach(Lady::tokenize(file_get_contents(EXAMPLE)) as $n => $token){
     <h1>LadyPHP demo</h1>
     <div class="block"><?php echo $tpl->msg ?></div>
     <div class="block"><?php echo $tpl->example ?></div>
+    <div class="block">Expanded<?php echo $tpl->exampleExpanded ?></div>
     <div class="block"><p><b>tokens</b></p><pre class="tokenBox"><?php echo $tpl->tokens ?></pre></div>
   </body>
 </html>

@@ -75,18 +75,30 @@ If `$cacheDir` is set, it is used as storage for cache files.
 
 ### Lady::parse()
 
-    Lady::parse(string $source)
+    Lady::parse(string $source, bool $expanded = false)
 
 Convert LadyPHP from string and return PHP code.
 
 ### Lady::parseFile()
 
-    Lady::parseFile(string $file)
+    Lady::parseFile(string $file, bool $expanded = false)
 
 Convert LadyPHP from file and return PHP code.
 
 ### Lady::testFile()
 
-    Lady::testFile(string $file)
+    Lady::testFile(string $file, bool $expanded = false)
 
 Parse file and return input and output as html.
+
+### Expanded style
+
+If `$expanded` is set to true, closing curly brackets are on new lines and indented.
+
+The output code looks more like written by human, but line numbers are not preserved.
+
+### Usage from command line
+
+    php lady.php [-e] example.lady > example.php
+
+When `-e` is used, output code has expanded style.
