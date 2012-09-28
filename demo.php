@@ -24,7 +24,7 @@ eval('?>' . $newCode);
 # save
 if (isset($_GET['save'])){
   if ($newCode != file_get_contents(PHP)){
-    rename(PHP, 'lady-' . time() . '.php');
+    rename(PHP, 'lady.php~' . time());
     file_put_contents(PHP, $newCode);
   }
   header('Location: ' . basename(__FILE__));
