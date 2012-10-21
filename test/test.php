@@ -1,10 +1,8 @@
 <?php
-require_once 'sdebug.php';
-sdebug();
 
 # define
-define('LADY',    __DIR__ . '/lady.lady');
-define('PHP',     __DIR__ . '/lady.php');
+define('LADY',    __DIR__ . '/../lady.lady');
+define('PHP',     __DIR__ . '/../lady.php');
 define('EXAMPLE', __DIR__ . '/example.lady');
 $tpl = new StdClass();
 
@@ -56,7 +54,7 @@ foreach(Lady::tokenize(file_get_contents(EXAMPLE)) as $n => $token){
 <!DOCTYPE html>
 <html>
   <head>
-    <title>LadyPHP demo</title>
+    <title>LadyPHP test</title>
     <style>
       body{
         width: 35em;
@@ -97,11 +95,11 @@ foreach(Lady::tokenize(file_get_contents(EXAMPLE)) as $n => $token){
         padding: .5em;
       }
       .token {
-        background-color: #df6;
+        background-color: #fca;
         position: relative;
       }
       .token:nth-child(even) {
-        background-color: #bef;
+        background-color: #bdf;
       }
       .tooltip {
         display: none;
@@ -127,7 +125,7 @@ foreach(Lady::tokenize(file_get_contents(EXAMPLE)) as $n => $token){
     </style>
   </head>
   <body>
-    <h1>LadyPHP demo</h1>
+    <h1>LadyPHP test</h1>
     <div class="block"><?php echo $tpl->msg ?></div>
     <div class="block"><?php echo $tpl->example ?></div>
     <div class="block">Expanded<?php echo $tpl->exampleExpanded ?></div>
