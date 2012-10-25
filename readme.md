@@ -22,8 +22,7 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making source 
 
     <?php
     require_once __DIR__ . '/lady.php';
-    Lady::register(__DIR__ . '/cache');
-    require_once 'lady://' . __DIR__ . '/example.lady';
+    Lady::scan(__DIR__); // converts all .lady files to .php files
 
 ## Example
 
@@ -65,16 +64,6 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making source 
 
 ## API
 
-### Lady::register()
-
-    bool Lady::register(string $cacheDir = null)
-
-Register `lady://` stream wrapper.
-
-If `$cacheDir` is set, it is used as storage for cache files.
-
-Returns true on success or false on failure.
-
 ### Lady::parse()
 
     string Lady::parse(string $source, bool $expanded = false)
@@ -98,12 +87,6 @@ Parse file and return input and output as html.
     array Lady::scan(string $dir, bool $recursive = false)
 
 Scans directory and converts changed or new `*.lady` files to `*.php` files.
-
-### Lady::watch()
-
-    array Lady::watch(string $dir, bool $recursive = false)
-
-Watches directory and converts changed or new `*.lady` files to `*.php` files.
 
 ### Expanded style
 

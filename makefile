@@ -1,4 +1,4 @@
-all: lady doc
+all: lady
 
 lady:
 	lady -i lady.lady -o lady.php~new
