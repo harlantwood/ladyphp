@@ -93,6 +93,18 @@ Convert LadyPHP from file and return PHP code.
 
 Parse file and return input and output as html.
 
+### Lady::scan()
+
+    array Lady::scan(string $dir, bool $recursive = false)
+
+Scans directory and converts changed or new `*.lady` files to `*.php` files.
+
+### Lady::watch()
+
+    array Lady::watch(string $dir, bool $recursive = false)
+
+Watches directory and converts changed or new `*.lady` files to `*.php` files.
+
 ### Expanded style
 
 If `$expanded` is set to true, closing curly brackets are on new lines and indented.
@@ -101,6 +113,11 @@ The output code looks more like written by human, but line numbers are not prese
 
 ### Usage from command line
 
-    php lady.php [-e] example.lady > example.php
+    php lady.php -i <file> [-o <file>] [-e]
+    php lady.php -w <dir> [-r]
 
-When `-e` is used, output code has expanded style.
+      -i <file>  input file
+      -o <file>  output file
+      -w <dir>   watch directory
+      -r         recursive scan
+      -e         expanded style

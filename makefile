@@ -1,9 +1,9 @@
 all: lady doc
 
 lady:
-	lady lady.lady > lady.php-new
+	lady -i lady.lady -o lady.php~new
 	mv lady.php lady.php~`date +%s`
-	mv lady.php-new lady.php
+	mv lady.php~new lady.php
 	git add lady.php
 
 doc:
