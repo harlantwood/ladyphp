@@ -76,12 +76,6 @@ Convert LadyPHP from string and return PHP code.
 
 Convert LadyPHP from file and return PHP code.
 
-### Lady::testFile()
-
-    string Lady::testFile(string $file, bool $expanded = false)
-
-Parse file and return input and output as html.
-
 ### Lady::scan()
 
     array Lady::scan(string $dir, bool $recursive = false)

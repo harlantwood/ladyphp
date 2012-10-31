@@ -31,27 +31,6 @@ class Lady{
     return self::parse(file_get_contents($filename), $expanded);}
 
   /**
-   * Parses file and returns input and output as html.
-   * @param string File to parse
-   * @param bool Expanded output
-   * @return string PHP code
-   */
-  static function testFile($filename, $expanded = false){
-    $html = '<div class="ladyTest"><p><b>' . basename($filename) . '</b> (hover to show PHP)</p><div>';
-    foreach (array(file_get_contents($filename), self::parseFile($filename, $expanded)) as $i => $text){
-      $html .= ($i == 0) ? '<pre>' : '</pre><pre>';
-      foreach (explode("\n", $text) as $n => $line){
-        $html .= sprintf("<span>%3d</span> %s\n", $n, htmlspecialchars($line));}}
-    return $html . '</pre></div></div><style>'
-      . '.ladyTest div {position:relative;border:1px solid #aaa;font-size:13px;overflow:auto}'
-      . '.ladyTest pre {background:#fff;color:#222}'
-      . '.ladyTest pre:last-child {position:absolute;display:none;top:0;left:0}'
-      . '.ladyTest div:hover pre:last-child {display:block}'
-      . '.ladyTest p {color:#888;font-size:14px}'
-      . '.ladyTest p b {color:#000}'
-      . '.ladyTest span {color:#aaa}</style>';}
-
-  /**
    * Parses LadyPHP from string to PHP code
    * @param string LadyPHP code
    * @param bool Expanded output

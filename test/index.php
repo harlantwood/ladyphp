@@ -22,7 +22,7 @@ eval('?>' . $newCode);
 # save
 if (isset($_GET['save'])){
   if ($newCode != file_get_contents(PHP)){
-    rename(PHP, 'lady.php~' . time());
+    rename(PHP, __DIR__ . '/../lady.php~' . time());
     file_put_contents(PHP, $newCode);
   }
   header('Location: ' . basename(__FILE__));
@@ -30,8 +30,12 @@ if (isset($_GET['save'])){
 }
 
 # example
-$tpl->example = Lady::testFile(EXAMPLE);
-$tpl->exampleExpanded = Lady::testFile(EXAMPLE, true);
+$tpl->example = null;
+$tpl->examplePhp = null;
+foreach (explode("\n", file_get_contents(EXAMPLE)) as $n => $line)
+  $tpl->example .= sprintf("<span>%3d</span> %s\n", $n, htmlspecialchars($line));
+foreach (explode("\n", Lady::parseFile(EXAMPLE)) as $n => $line)
+  $tpl->examplePhp .= sprintf("<span>%3d</span> %s\n", $n, htmlspecialchars($line));
 
 # test
 if ($newCode == file_get_contents(PHP))
@@ -122,13 +126,46 @@ foreach(Lady::tokenize(file_get_contents(EXAMPLE)) as $n => $token){
       .token .tooltip:hover {
         display: none;
       }
+      .ladyTest div{
+        position: relative;
+        border: 1px solid #aaa;
+        font-size: 13px;
+        overflow: auto;
+      }
+      .ladyTest pre{
+        background: #fff;
+        color: #222;
+      }
+      .ladyTest pre:last-child{
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+      }
+      .ladyTest div:hover pre:last-child{
+        display: block;
+      }
+      .ladyTest p{
+        color: #888;
+        font-size: 14px;
+      }
+      .ladyTest p b{
+        color: black;
+      }
+      .ladyTest span{
+        color: #aaa;
+      }
     </style>
   </head>
   <body>
     <h1>LadyPHP test</h1>
     <div class="block"><?php echo $tpl->msg ?></div>
-    <div class="block"><?php echo $tpl->example ?></div>
-    <div class="block">Expanded<?php echo $tpl->exampleExpanded ?></div>
+    <div class="block ladyTest"><p><b><?php echo basename(EXAMPLE) ?></b> (hover to show PHP)</p>
+      <div>
+      <pre><?php echo $tpl->example ?></pre>
+      <pre><?php echo $tpl->examplePhp ?></pre>
+      </div>
+    </div>
     <div class="block"><p><b>tokens</b></p><pre class="tokenBox"><?php echo $tpl->tokens ?></pre></div>
   </body>
 </html>
