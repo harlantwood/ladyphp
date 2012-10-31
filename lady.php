@@ -228,12 +228,12 @@ class Lady{
     return $tokens;}
 
   /**
-   * Scans directory and converts changed or new *.lady files to *.php files.
-   * @param string Directory to scan
+   * Converts changed or new .lady files in directory to .php files.
+   * @param string Directory containing .lady files
    * @param bool Recursive search
    * @return array List of generated files
    */
-  function scan($dir, $recursive = false){
+  function convert($dir, $recursive = false){
     $files = array();
     $it = new RecursiveDirectoryIterator(realpath($dir));
     if ($recursive){
@@ -242,21 +242,20 @@ class Lady{
       if (!$it->isDot() && $it->isFile()
           && pathinfo($it->key(), PATHINFO_EXTENSION) == 'lady'){
         $phpFile = substr($it->key(), 0, -5) . '.php';
-        if (!is_file($phpFile)
-            || filemtime($phpFile) < filemtime($it->key())){
+        if (!is_file($phpFile) || filemtime($phpFile) < filemtime($it->key())){
           file_put_contents($phpFile, self::parseFile($it->key()));
           $files[] = $phpFile;}}
       $it->next();}
     return $files;}
 
   /**
-   * Watches directory and converts changed or new *.lady files to *.php files.
-   * @param string Directory to scan
+   * Watches directory and converts changed or new .lady files to .php files.
+   * @param string Directory to watch
    * @param bool Recursive search
    */
   function watch($dir, $recursive = false){
     while (true){
-      $files = self::scan($dir, $recursive);
+      $files = self::convert($dir, $recursive);
       foreach ($files as $file){
         echo date("H:i:s") . ' ' . $file . "\n";}
       usleep(500000);}}}
@@ -265,14 +264,14 @@ class Lady{
  * Parses parameters from command line.
  */
 if (isset($argv[1]) && realpath($argv[0]) == realpath(__FILE__)){
-  $opts = getopt('i:o:s:w:er');
+  $opts = getopt('i:o:c:w:er');
   if (isset($opts['i'])){
     $output = Lady::parseFile($opts['i'], isset($opts['e']));
     if (isset($opts['o'])){
       file_put_contents($opts['o'], $output);}
     else{
       echo $output;}}
-  elseif (isset($opts['s'])){
-    echo implode("\n", Lady::scan($opts['s'], isset($opts['r']))) . "\n";}
+  elseif (isset($opts['c'])){
+    echo implode("\n", Lady::convert($opts['c'], isset($opts['r']))) . "\n";}
   elseif (isset($opts['w'])){
     Lady::watch($opts['w'], isset($opts['r']));}}

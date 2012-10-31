@@ -22,7 +22,7 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making source 
 
     <?php
     require_once __DIR__ . '/lady.php';
-    Lady::scan(__DIR__); // converts all .lady files to .php files
+    Lady::convert(__DIR__); // converts all .lady files to .php files
 
 ## Example
 
@@ -76,11 +76,11 @@ Convert LadyPHP from string and return PHP code.
 
 Convert LadyPHP from file and return PHP code.
 
-### Lady::scan()
+### Lady::convert()
 
-    array Lady::scan(string $dir, bool $recursive = false)
+    array Lady::convert(string $dir, bool $recursive = false)
 
-Scans directory and converts changed or new `*.lady` files to `*.php` files.
+Converts changed or new .lady files in directory to .php files.
 
 ### Expanded style
 
@@ -95,6 +95,6 @@ The output code looks more like written by human, but line numbers are not prese
 
       -i <file>  input file
       -o <file>  output file
-      -w <dir>   watch directory
-      -r         recursive scan
-      -e         expanded style
+      -c <dir>   converts files in directory
+      -w <dir>   watch files in directory
+      -r         recursive search of files
