@@ -78,7 +78,7 @@ Convert LadyPHP from file and return PHP code.
 
 ### Lady::convert()
 
-    array Lady::convert(string $dir, bool $recursive = false)
+    array Lady::convert(string $dir, bool $recursive = false, bool $expanded = false)
 
 Converts changed or new .lady files in directory to .php files.
 
@@ -91,10 +91,12 @@ The output code looks more like written by human, but line numbers are not prese
 ### Usage from command line
 
     php lady.php -i <file> [-o <file>] [-e]
-    php lady.php -w <dir> [-r]
+    php lady.php -c[=<dir>] [-r] [-e]
+    php lady.php -w[=<dir>] [-r] [-e]
 
       -i <file>  input file
       -o <file>  output file
-      -c <dir>   converts files in directory
-      -w <dir>   watch files in directory
+      -c <dir>   converts all files in directory
+      -w <dir>   watches all files in directory
       -r         recursive search of files
+      -e         expanded style

@@ -233,7 +233,7 @@ class Lady
    * @param bool Recursive search
    * @return array List of generated files
    */
-  fn convert(dir, recursive = false)
+  fn convert(dir, recursive = false, expanded = false)
     files = []
     it = RecursiveDirectoryIterator(realpath(dir))
     if (recursive)
@@ -243,7 +243,7 @@ class Lady
           && pathinfo(it.key(), PATHINFO_EXTENSION) == 'lady')
         phpFile = substr(it.key(), 0, -5) . '.php'
         if (!is_file(phpFile) || filemtime(phpFile) < filemtime(it.key()))
-          file_put_contents(phpFile, self.parseFile(it.key()))
+          file_put_contents(phpFile, self.parseFile(it.key(), expanded))
           files[] = phpFile
       it.next()
     return files
@@ -253,9 +253,9 @@ class Lady
    * @param string Directory to watch
    * @param bool Recursive search
    */
-  fn watch(dir, recursive = false)
+  fn watch(dir, recursive = false, expanded = false)
     while (true)
-      files = self.convert(dir, recursive)
+      files = self.convert(dir, recursive, expanded)
       foreach (files as file)
         echo date("H:i:s") . ' ' . file . "\n"
       usleep(500000)
@@ -264,7 +264,7 @@ class Lady
  * Parses parameters from command line.
  */
 if (isset(argv[1]) && realpath(argv[0]) == realpath(__FILE__))
-  opts = getopt('i:o:c:w:er')
+  opts = getopt('i:o:c::w::er')
   if (isset(opts['i']))
     output = Lady.parseFile(opts['i'], isset(opts['e']))
     if (isset(opts['o']))
@@ -272,6 +272,6 @@ if (isset(argv[1]) && realpath(argv[0]) == realpath(__FILE__))
     else
       echo output
   elseif (isset(opts['c']))
-    echo implode("\n", Lady.convert(opts['c'], isset(opts['r']))) . "\n"
+    echo implode("\n", Lady.convert(opts['c'], isset(opts['r']), isset(opts['e']))) . "\n"
   elseif (isset(opts['w']))
-    Lady.watch(opts['w'], isset(opts['r']))
+    Lady.watch(opts['w'], isset(opts['r']), isset(opts['e']))
