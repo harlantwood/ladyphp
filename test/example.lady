@@ -20,9 +20,9 @@ class Fruit
            ? this.numbers[apples] : apples
     switch (apples)
       case 1
-        return out . ' apple.'
+        return out .. ' apple.'
       default
-        return out..' apples.'
+        return "$out apples."
 
 fruit = Fruit()
 fruit.addApples(1)

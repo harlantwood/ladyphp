@@ -40,7 +40,6 @@ class Lady
    */
   static fn parse(source, expanded = false)
     source = str_replace("\r", '', source)
-    tokens = self.tokenize(source)
     openingBracket = false
     closingBrackets = []
     closingIndentStr = []
@@ -48,6 +47,7 @@ class Lady
     arrayBrackets = []
 
     # process tokens
+    tokens = self.tokenize(source)
     foreach (tokens as n: token)
       token = tokens[n]
       extract(token, EXTR_OVERWRITE | EXTR_REFS)
@@ -100,7 +100,7 @@ class Lady
       while (((tokens[n + i]['type'] == T_STRING
           && preg_match(self.REGEX_CLASS, tokens[n + i]['str']))
           || tokens[n + i]['type'] == T_NS_SEPARATOR)
-          && hasBlank
+          && !in_array(tokens[n - 1]['type'], [T_STRING, T_NS_SEPARATOR])
           && (!tokens[n + i]['hasBlank'] || i == 0)
           && tokens[n - 1]['type'] != T_NEW)
         if (tokens[n + i]['type'] == T_STRING
@@ -110,7 +110,7 @@ class Lady
         i++
 
       # add semicolon and brackets
-      if (isLast && type != T_CLOSE_TAG
+      if (isLast && !in_array(type, [T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_CLOSE_TAG])
           && !in_array(str, explode(' ', self.JOINING . ' ' . self.ENDING)))
 
         # sort list of closing brackets
@@ -165,11 +165,12 @@ class Lady
 
       # convert php open tags
       if (type == T_OPEN_TAG)
-        str = '<?php '
+        if (!strstr(str, 'php'))
+          str = str_replace('?', '?php ', str)
         if (y == 0)
-          str .= self.head
+          str = str_replace('php', 'php ' .. self.head, str)
       if (type == T_OPEN_TAG_WITH_ECHO)
-        str = '<?php echo '
+        str = str_replace('<?=', '<?php echo ', str)
 
       # save token
       tokens[n] = token
@@ -188,10 +189,33 @@ class Lady
    * @return array Tokens
    */
   static fn tokenize(source)
-    tokens = []
-    blank = null
+
+    # replace open short tags to full ones
+    if (!function_exists('ini_get') || !ini_get('short_open_tag'))
+      do
+        changed = false
+        tokens = token_get_all(source)
+        source = null
+        foreach (tokens as n: token)
+          token = is_array(token) ? token : [null, token]
+          if (!changed && token[0] == T_INLINE_HTML)
+            if (strpos(token[1], '<?=') !== false)
+              position = strpos(token[1], '<?=')
+              source .= substr_replace(token[1], '<?php echo ', position, 3)
+              changed = true
+            elseif (strpos(token[1], '<?') !== false)
+              position = strpos(token[1], '<?')
+              source .= substr_replace(token[1], '<?php ', position, 2)
+              changed = true
+            else
+              source .= token[1]
+          else
+            source .= token[1]
+      while (changed)
 
     # prepare tokens
+    tokens = []
+    blank = null
     foreach (token_get_all(source) as n: token)
 
       # convert to associative array
