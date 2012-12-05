@@ -260,7 +260,7 @@ class Lady
    * @param bool Recursive search
    * @return array List of generated files
    */
-  fn convert(dir, recursive = false, expanded = false)
+  static fn convert(dir, recursive = false, expanded = false)
     files = []
     it = RecursiveDirectoryIterator(realpath(dir))
     if (recursive)
@@ -280,7 +280,7 @@ class Lady
    * @param string Directory to watch
    * @param bool Recursive search
    */
-  fn watch(dir, recursive = false, expanded = false)
+  static fn watch(dir, recursive = false, expanded = false)
     while (true)
       files = self.convert(dir, recursive, expanded)
       foreach (files as file)

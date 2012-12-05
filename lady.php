@@ -260,7 +260,7 @@ class Lady{
    * @param bool Recursive search
    * @return array List of generated files
    */
-  function convert($dir, $recursive = false, $expanded = false){
+  static function convert($dir, $recursive = false, $expanded = false){
     $files = array();
     $it = new RecursiveDirectoryIterator(realpath($dir));
     if ($recursive){
@@ -280,7 +280,7 @@ class Lady{
    * @param string Directory to watch
    * @param bool Recursive search
    */
-  function watch($dir, $recursive = false, $expanded = false){
+  static function watch($dir, $recursive = false, $expanded = false){
     while (true){
       $files = self::convert($dir, $recursive, $expanded);
       foreach ($files as $file){
