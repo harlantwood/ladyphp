@@ -1,0 +1,49 @@
+LadyPHP - type PHP with elegance
+================================
+
+Simple (and stupid) preprocessor for PHP.
+
+- adds semicolons at end of lines
+- adds curly brackets according to intentation
+- adds some syntactic sugar:
+
+    Lady      | PHP
+    ----------|----------
+    var       | $var
+    obj.var   | $obj->var
+    obj.f()   | $obj->f()
+    Cls.var   | Cls::$var
+    Cls.f()   | Cls::f()
+    Cls.CON   | Cls::CON
+    Cls()     | new Cls()
+    x .. y    | $x . $y
+    [1: 2]    | array(1 => 2)
+    fn        | function
+    case 1    | case 1:
+    default   | default:
+    <?        | <?php
+    <?=       | <?php echo
+    __FILE__  | source file  \ only when used
+    __DIR__   | source dir   /  from lady()
+
+- original line numbers are preserved, it's handy for debugging
+- lady herself is written in lady, USE THE SOURCE for reference
+
+
+Usage from PHP
+--------------
+
+    require __DIR__ . '/lady.php';
+    require lady(__DIR__ . '/example.lady');
+
+
+Usage from command line
+-----------------------
+
+    php lady.php -i example.lady -o example.php
+    php lady.php -c  # converts all .lady files in dir
+    php lady.php -w  # watches and converts on the fly
+
+    options:
+      -r  search files recursively
+      -e  expanded (human-like) style
