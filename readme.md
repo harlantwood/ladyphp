@@ -2,7 +2,8 @@
 LadyPHP - type PHP with elegance
 ================================
 
-Simple (and stupid) preprocessor for PHP. Main purpose of this is making source code a little more beautiful.
+Simple (and stupid) preprocessor for PHP.
+Main purpose of this is making source code a little more beautiful.
 
 - optional `;` at end of line
 - variables doesn't have to be prefixed with `$`, but they must start with a lowercase letter
@@ -20,22 +21,18 @@ Simple (and stupid) preprocessor for PHP. Main purpose of this is making source 
 
 ## Usage
 
-You can convert all `.lady` files to `.php`.
+You can convert all `.lady` files in directory to `.php` from command line.
 
-```php
-<?php
-require_once __DIR__ . '/lady.php';
-Lady::convert(__DIR__);
-require_once __DIR__ . '/example.php';
+```bash
+$ php lady.php -c
 ```
 
-Or you can use `lady://` stream wrapper.
+Or you can use `Lady::getFile()` or just `lady()` in php script.
 
 ```php
 <?php
 require_once __DIR__ . '/lady.php';
-Lady::register(__DIR__ . '/cache');
-require_once 'lady://' . __DIR__ . '/example.lady';
+require_once lady(__DIR__ . '/example.lady');
 ```
 
 ## Example
@@ -82,48 +79,29 @@ fruit.addApples(1)                                 | $fruit->addApples(1)
 
 ## API
 
-### Lady::convert()
+### Lady::getFile(), lady()
 
 ```php
-array Lady::convert(string $dir, bool $recursive = false, bool $expanded = false)
+string Lady::getFile(string $filename)
+string lady(string $filename)
 ```
 
-Converts changed or new `.lady` files in directory to `.php` files.
+Registers stream wrapper for `lady://` and returns path to converted file.
 
-Returns array of converted files.
+It saves cache to default system temporary directory, you can change it by `Lady::$cacheDir = 'myTempDir'`.
 
-### Lady::register()
+Magic constants `__FILE__` and `__DIR__` in converted file are replaced to values of source file.
 
-```php
-bool Lady::register(string $cacheDir = null)
-```
-
-Registers `lady://` stream wrapper.
-
-If `$cacheDir` is set, it is used as storage for cache files.
-
-Returns true on success or false on failure.
-
-### Lady::parse()
+### Lady::parse(), Lady::parseFile()
 
 ```php
 string Lady::parse(string $source, bool $expanded = false)
-```
-
-Converts LadyPHP from string and return PHP code.
-
-### Lady::parseFile()
-
-```php
 string Lady::parseFile(string $file, bool $expanded = false)
 ```
 
-Converts LadyPHP from file and return PHP code.
-
-### Expanded style
+Converts LadyPHP from string or from file and returns PHP code.
 
 If `$expanded` is set to true, closing curly brackets are on new lines and indented.
-
 The output code looks more like written by human, but line numbers are not preserved.
 
 ### Usage from command line
