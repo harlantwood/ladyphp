@@ -305,7 +305,6 @@ class Lady{
   function stream_open($filename){
     $this->filename = realpath(str_replace('lady://', '', $filename));
     $this->position = 0;
-    echo $this->filename;
     if (!is_file($this->filename)){
       return false;}
     if (!self::$cacheDir){

@@ -8,6 +8,5 @@ lady:
 
 doc:
 	apigen -s lady.php -d doc/
-	git add doc/
 
 .PHONY: all lady doc
