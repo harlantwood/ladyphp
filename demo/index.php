@@ -11,7 +11,7 @@ $oldCode = $isClass = null;
 foreach (token_get_all(file_get_contents(PHP)) as $token){
   $token = is_array($token) ? $token : [null, $token];
   $oldCode .=  $isClass ? $token[1] . 'Old' : $token[1];
-  $isClass = ($token[0] == T_CLASS);
+  $isClass = ($token[0] === T_CLASS);
 }
 eval('?>' . $oldCode);
 
@@ -30,8 +30,7 @@ if (isset($_GET['save'])){
 }
 
 # example
-$tpl->example = null;
-$tpl->examplePhp = null;
+$tpl->example = $tpl->examplePhp = null;
 foreach (explode("\n", file_get_contents(EXAMPLE)) as $n => $line)
   $tpl->example .= sprintf("<span>%3d</span> %s\n", $n, htmlspecialchars($line));
 foreach (explode("\n", Lady::parseFile(EXAMPLE)) as $n => $line)
@@ -58,7 +57,7 @@ foreach(Lady::tokenize(file_get_contents(EXAMPLE)) as $n => $token){
 <!DOCTYPE html>
 <html>
   <head>
-    <title>LadyPHP test</title>
+    <title>LadyPHP demo</title>
     <style>
       body{
         width: 35em;
@@ -66,7 +65,7 @@ foreach(Lady::tokenize(file_get_contents(EXAMPLE)) as $n => $token){
         margin-bottom: 10em;
         background: #fafafa;
         font-family: 'Droid Sans', 'Tahoma', 'Arial', sans;
-        font-size: 16px;
+        font-size: 12pt;
       }
       .block{
         margin: 1em 0;
@@ -78,12 +77,12 @@ foreach(Lady::tokenize(file_get_contents(EXAMPLE)) as $n => $token){
       a{
         float: right;
         padding: 0 .2em;
-        color: #e22;
+        color: #22e;
         text-decoration: none;
       }
       a:hover{
         color: white;
-        background: #e22;
+        background: #22e;
       }
       h1{
         color: #444;
@@ -158,7 +157,7 @@ foreach(Lady::tokenize(file_get_contents(EXAMPLE)) as $n => $token){
     </style>
   </head>
   <body>
-    <h1>LadyPHP test</h1>
+    <h1>LadyPHP demo</h1>
     <div class="block"><?php echo $tpl->msg ?></div>
     <div class="block ladyTest"><p><b><?php echo basename(EXAMPLE) ?></b> (hover to show PHP)</p>
       <div>
