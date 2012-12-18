@@ -26,7 +26,7 @@ class Lady{
   /**
    * Loads file and parses it.
    * @param string File to parse
-   * @param bool Expanded output
+   * @param bool Expanded style
    * @return string PHP code
    */
   static function parseFile($filename, $expanded = false){
@@ -35,7 +35,7 @@ class Lady{
   /**
    * Parses LadyPHP from string to PHP code
    * @param string LadyPHP code
-   * @param bool Expanded output
+   * @param bool Expanded style
    * @return string PHP code
    */
   static function parse($source, $expanded = false){
@@ -258,7 +258,8 @@ class Lady{
    * Converts changed or new .lady files in directory to .php files.
    * @param string Directory containing .lady files
    * @param bool Recursive search
-   * @return array List of generated files
+   * @param bool Expanded style
+   * @return array List of converted files
    */
   static function convert($dir, $recursive = false, $expanded = false){
     $files = array();
@@ -279,6 +280,7 @@ class Lady{
    * Watches directory and converts changed or new .lady files to .php files.
    * @param string Directory to watch
    * @param bool Recursive search
+   * @param boll Expanded style
    */
   static function watch($dir, $recursive = false, $expanded = false){
     while (true){
@@ -288,40 +290,38 @@ class Lady{
       usleep(500000);}}
 
   /**
-   * Registers wrapper for lady:// and returns path to converted file.
-   * @param string
-   * @return string
+   * Converts and requires lady file.
+   * @param string Filename
+   * @param bool Require file once
+   * @return mixed Return value of required file
    */
-  static function getFile($filename){
-    if (!in_array('lady', stream_get_wrappers())){
-      stream_wrapper_register('lady', __CLASS__);}
-    return 'lady://' . $filename;}
+  static function requireFile($filename, $once = false){
+    if (!is_file($filename)){
+      throw new ErrorException('Required file ' . $filename . ' not found.');}
+    stream_wrapper_unregister('file');
+    stream_wrapper_register('file', __CLASS__);
+    $result = $once ? require_once($filename) : require($filename);
+    stream_wrapper_restore('file');
+    return $result;}
 
   /**
    * Opens file and uses cache.
-   * @param string Directory for cache files
+   * @param string Filename
    * @return bool File was loaded
    */
   function stream_open($filename){
-    $this->filename = realpath(str_replace('lady://', '', $filename));
+    stream_wrapper_restore('file');
+    $this->filename = realpath($filename);
     $this->position = 0;
     if (!is_file($this->filename)){
-      return false;}
+      throw new ErrorException('File ' . $filename . ' not found.');}
     if (!self::$cacheDir){
       self::$cacheDir = sys_get_temp_dir() . '/ladyphp-' . sha1(realpath(__FILE__));}
     if (!is_dir(self::$cacheDir)){
       mkdir(self::$cacheDir, 0755, true);}
     $this->cacheFile = self::$cacheDir . '/' . sha1($this->filename) . '.php';
     if (!is_file($this->cacheFile) || filemtime($this->cacheFile) <= filemtime($this->filename)){
-      $code = self::parseFile($this->filename);
-      $this->buffer = null;
-      foreach (token_get_all($code) as $token){
-        if ($token[0] == T_FILE){
-          $this->buffer .= var_export($this->filename, true);}
-        elseif ($token[0] == T_DIR){
-          $this->buffer .= var_export(dirname($this->filename), true);}
-        else{
-          $this->buffer .= is_array($token) ? $token[1] : $token;}}
+      $this->buffer = self::parseFile($this->filename);
       file_put_contents($this->cacheFile, $this->buffer);}
     else{
       $this->buffer = file_get_contents($this->cacheFile);}
@@ -358,14 +358,17 @@ class Lady{
     return $this->stream_stat();}}
 
 /**
- * Shortcut function.
+ * Shortcut functions
  */
 if (!function_exists('lady')){
-  function lady($filename){
-    return Lady::getFile($filename);}}
+  function lady($filename, $once = false){
+    return Lady::requireFile($filename, $once);}}
+if (!function_exists('lady_once')){
+  function lady_once($filename, $once = true){
+    return Lady::requireFile($filename, $once);}}
 
 /**
- * Parses parameters from command line.
+ * Process parameters from command line
  */
 if (isset($argv[1]) && realpath($argv[0]) == realpath(__FILE__)){
   $opts = getopt('i:o:c::w::er');

@@ -9,14 +9,13 @@ Simple (and stupid) preprocessor for PHP.
 
     Lady    | PHP             Lady   | PHP
     --------|----------     ---------|---------
-    var     | $var          [1: 2]   | array(1 => 2)
-    obj.var | $obj->var     fn       | function
-    obj.f() | $obj->f()     case 1   | case 1:
-    Cls.var | Cls::$var     default  | default:
-    Cls.f() | Cls::f()      <?       | <?php
-    Cls.CON | Cls::CON      <?=      | <?php echo
-    Cls()   | new Cls()     __FILE__ | source file  \ only when used
-    x .. y  | $x . $y       __DIR__  | source dir   /  from lady()
+    var     | $var          x .. y   | $x . $y
+    obj.var | $obj->var     [1: 2]   | array(1 => 2)
+    obj.f() | $obj->f()     fn       | function
+    Cls.var | Cls::$var     case 1   | case 1:
+    Cls.f() | Cls::f()      default  | default:
+    Cls.CON | Cls::CON      <?       | <?php
+    Cls()   | new Cls()     <?=      | <?php echo
 
 - original line numbers are preserved, it's handy for debugging
 - lady herself is written in lady, USE THE SOURCE for reference
@@ -25,8 +24,8 @@ Simple (and stupid) preprocessor for PHP.
 Usage from PHP
 --------------
 
-    require __DIR__ . '/lady.php';
-    require lady(__DIR__ . '/example.lady');
+    require(__DIR__ . '/lady.php');
+    lady(__DIR__ . '/example.lady');
 
 
 Usage from command line
@@ -39,3 +38,12 @@ Usage from command line
     options:
       -r  search files recursively
       -e  expanded (human-like) style
+
+
+Similar projects
+----------------
+
+    http://github.com/runekaagaard/snowscript
+    http://github.com/bonndan/pythophant
+    http://github.com/knnktr-labs/flatwhite
+    http://github.com/niklasvh/php.js
