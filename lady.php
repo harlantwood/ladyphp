@@ -57,24 +57,24 @@ class Lady{
         break;}
 
       # square brackets to array()
-      elseif ($str == '['){
+      elseif (!$type && $str == '['){
         $squareBrackets++;
         if ($hasBlank || in_array($tokens[$n - 1]['str'], explode(' ', self::JOINING . ' ' . self::ENDING))){
           $str = 'array(';
           $arrayBrackets[$squareBrackets] = true;}}
 
-      elseif ($str == ']'){
+      elseif (!$type && $str == ']'){
         if (isset($arrayBrackets[$squareBrackets]) && $arrayBrackets[$squareBrackets]){
           $str = ')';
           $arrayBrackets[$squareBrackets] = false;}
         $squareBrackets--;}
 
       # convert 'fn' to 'function'
-      elseif ($str == 'fn'){
+      elseif ($type == T_STRING && $str == 'fn'){
         $str = 'function';}
 
       # convert . to -> or :: and .. to .
-      elseif ($str == '.'){
+      elseif (!$type && $str == '.'){
         if ($tokens[$n + 1]['str'] == '.'){
           $tokens[$n + 1]['str'] = '';}
         elseif (!$hasBlank || !$tokens[$n + 1]['hasBlank']){
@@ -84,7 +84,7 @@ class Lady{
             $str = '->';}}}
 
       # convert : to =>
-      elseif ($str == ':' && !$hasBlank && !$isLast){
+      elseif (!$type && $str == ':' && !$hasBlank && !$isLast){
         $str = ' =>';}
 
       # add $ before variables
