@@ -20,7 +20,7 @@ class Fruit
            ? this.numbers[apples] : apples
     switch (apples)
       case 1
-        return out .. ' apple.'
+        return out ' apple.'
       default
         return "$out apples."
 
