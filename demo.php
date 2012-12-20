@@ -1,8 +1,8 @@
 <?php
 
 # define
-define('LADY',    __DIR__ . '/../lady.lady');
-define('PHP',     __DIR__ . '/../lady.php');
+define('LADY',    __DIR__ . '/lady.lady');
+define('PHP',     __DIR__ . '/lady.php');
 define('EXAMPLE', __DIR__ . '/example.lady');
 $tpl = new StdClass();
 
