@@ -60,7 +60,7 @@ class Lady
       # square brackets to array()
       elseif (!type && str == '[')
         squareBrackets++
-        if (hasBlank || in_array(tokens[n - 1]['str'], explode(' ', self.JOINING .. ' ' .. self.ENDING)))
+        if (hasBlank || in_array(tokens[n - 1]['str'], explode(' ', self.JOINING ' ' self.ENDING)))
           str = 'array('
           arrayBrackets[squareBrackets] = true
 
@@ -94,7 +94,7 @@ class Lady
           && tokens[n - 1]['str'] != '->'
           && preg_match(self.REGEX_VARIABLE, str)
           && !preg_match(self.REGEX_NOVARIABLE, str))
-        str = '$' .. str
+        str = '$' str
 
       if (!isFirst && hasBlank
           && (in_array(token_name(type), explode(' ', self.CONCATED))
@@ -115,13 +115,13 @@ class Lady
           && tokens[n - 1]['type'] != T_NEW)
         if (tokens[n + i]['type'] == T_STRING
             && tokens[n + i + 1]['str'] == '(')
-          str = 'new ' .. str
+          str = 'new ' str
           break
         i++
 
       # add semicolon and brackets
       if (isLast && !in_array(type, [T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_CLOSE_TAG])
-          && !in_array(str, explode(' ', self.JOINING .. ' ' .. self.ENDING)))
+          && !in_array(str, explode(' ', self.JOINING ' ' self.ENDING)))
 
         # sort list of closing brackets
         closingBrackets = array_unique(closingBrackets)
@@ -143,7 +143,7 @@ class Lady
         elseif (tokens[n + 1]['indent'] > indent)
 
           # add opening bracket
-          if (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING .. ' ' .. self.CONTINUING)))
+          if (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING ' ' self.CONTINUING)))
             str .= '{'
             closingBrackets[] = indent
             closingIndentStr[indent] = indentStr
@@ -153,7 +153,7 @@ class Lady
             openingBracket = indent
 
         # line doesn't continue
-        elseif (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING .. ' ' .. self.CONTINUING)))
+        elseif (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING ' ' self.CONTINUING)))
           # there is saved opening bracket
           if (openingBracket !== false
               && tokens[n + 1]['indent'] > openingBracket)
@@ -169,7 +169,7 @@ class Lady
           while (isset(closingBrackets[0])
               && closingBrackets[0] >= tokens[n + 1]['indent'])
             if (expanded)
-              str .= "\n" .. closingIndentStr[closingBrackets[0]]
+              str .= "\n" closingIndentStr[closingBrackets[0]]
             str .= '}'
             closingBrackets = array_slice(closingBrackets, 1)
 
@@ -178,7 +178,7 @@ class Lady
         if (!strstr(str, 'php'))
           str = str_replace('?', '?php ', str)
         if (y == 0)
-          str = str_replace('php', 'php ' .. self.head, str)
+          str = str_replace('php', 'php ' self.head, str)
       if (type == T_OPEN_TAG_WITH_ECHO)
         str = str_replace('<?=', '<?php echo ', str)
 
@@ -188,7 +188,7 @@ class Lady
     # glue code
     code = null
     foreach (tokens as token)
-      code .= token['blank'] .. token['str']
+      code .= token['blank'] token['str']
 
     # return
     return code
@@ -254,7 +254,7 @@ class Lady
         token['isFirst'] = true
       else
         blankRow = array_slice(explode("\n", token['blank']), -1)
-        token['y'] = tokens[n - 1]['y'] + count(explode("\n", tokens[n - 1]['str'] .. token['blank'])) - 1
+        token['y'] = tokens[n - 1]['y'] + count(explode("\n", tokens[n - 1]['str'] token['blank'])) - 1
         token['isFirst'] = tokens[n - 1]['isLast'] = (tokens[n - 1]['y'] != token['y'])
         token['x'] = mb_strlen(blankRow[0])
         token['x'] += !token['isFirst'] ? tokens[n - 1]['x'] + mb_strlen(tokens[n - 1]['str']) : null
@@ -279,7 +279,7 @@ class Lady
     while (it.valid())
       if (!it.isDot() && it.isFile()
           && pathinfo(it.key(), PATHINFO_EXTENSION) == 'lady')
-        phpFile = substr(it.key(), 0, -5) .. '.php'
+        phpFile = substr(it.key(), 0, -5) '.php'
         if (!is_file(phpFile) || filemtime(phpFile) < filemtime(it.key()))
           file_put_contents(phpFile, self.parseFile(it.key(), expanded))
           files[] = phpFile
@@ -296,7 +296,7 @@ class Lady
     while (true)
       files = self.convert(dir, recursive, expanded)
       foreach (files as file)
-        echo date("H:i:s") .. ' ' .. file .. "\n"
+        echo date("H:i:s") ' ' file "\n"
       usleep(500000)
 
   /**
@@ -307,7 +307,7 @@ class Lady
    */
   static fn requireFile(filename, once = false)
     if (!is_file(filename))
-      throw ErrorException('Required file ' .. filename .. ' not found.')
+      throw ErrorException('Required file ' filename ' not found.')
     stream_wrapper_unregister('file')
     stream_wrapper_register('file', __CLASS__)
     result = once ? require_once(filename) : require(filename)
@@ -324,12 +324,12 @@ class Lady
     this.filename = realpath(filename)
     this.position = 0
     if (!is_file(this.filename))
-      throw ErrorException('File ' .. filename .. ' not found.')
+      throw ErrorException('File ' filename ' not found.')
     if (!self.cacheDir)
-      self.cacheDir = sys_get_temp_dir() .. '/ladyphp-' .. sha1(realpath(__FILE__))
+      self.cacheDir = sys_get_temp_dir() '/ladyphp-' sha1(realpath(__FILE__))
     if (!is_dir(self.cacheDir))
       mkdir(self.cacheDir, 0755, true)
-    this.cacheFile = self.cacheDir .. '/' .. sha1(this.filename) .. '.php'
+    this.cacheFile = self.cacheDir '/' sha1(this.filename) '.php'
     if (!is_file(this.cacheFile) || filemtime(this.cacheFile) <= filemtime(this.filename))
       this.buffer = self.parseFile(this.filename)
       file_put_contents(this.cacheFile, this.buffer)
@@ -389,6 +389,6 @@ if (isset(argv[1]) && realpath(argv[0]) == realpath(__FILE__))
     else
       echo output
   elseif (isset(opts['c']))
-    echo implode("\n", Lady.convert(opts['c'], isset(opts['r']), isset(opts['e']))) .. "\n"
+    echo implode("\n", Lady.convert(opts['c'], isset(opts['r']), isset(opts['e']))) "\n"
   elseif (isset(opts['w']))
     Lady.watch(opts['w'], isset(opts['r']), isset(opts['e']))
