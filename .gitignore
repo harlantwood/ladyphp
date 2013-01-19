@@ -1,3 +1,5 @@
 *~*
 /tmp/
 /doc/
+/vendor/
+/composer.lock
