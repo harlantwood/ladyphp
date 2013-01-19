@@ -96,6 +96,7 @@ class Lady
           && !preg_match(self.REGEX_NOVARIABLE, str))
         str = '$' str
 
+      # add . between variables and strings
       if (!isFirst && hasBlank
           && (in_array(token_name(type), explode(' ', self.CONCATED))
           || (!type && in_array(str, ['"', '@'])))

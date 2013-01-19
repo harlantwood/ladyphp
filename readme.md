@@ -1,5 +1,4 @@
-LadyPHP - type PHP with elegance
-================================
+# LadyPHP - type PHP with elegance
 
 Simple (and stupid) preprocessor for PHP.
 
@@ -21,15 +20,13 @@ Simple (and stupid) preprocessor for PHP.
 - lady herself is written in lady, USE THE SOURCE for reference
 
 
-Usage from PHP
---------------
+## Usage from PHP
 
     require(__DIR__ . '/lady.php');
     lady(__DIR__ . '/example.lady');
 
 
-Usage from command line
------------------------
+## Usage from command line
 
     php lady.php -i example.lady -o example.php
     php lady.php -c  # converts all .lady files in dir
@@ -40,10 +37,8 @@ Usage from command line
       -e  expanded (human-like) style
 
 
-Similar projects
-----------------
+## Similar projects
 
     http://github.com/runekaagaard/snowscript
     http://github.com/bonndan/pythophant
     http://github.com/knnktr-labs/flatwhite
-    http://github.com/niklasvh/php.js
