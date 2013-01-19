@@ -6,6 +6,7 @@ Simple (and stupid) preprocessor for PHP.
 - adds curly brackets according to indentation
 - adds some syntactic sugar:
 
+    ```
     Lady    | PHP             Lady   | PHP
     --------|----------     ---------|---------
     var     | $var          a b      | $a . $b
@@ -15,6 +16,7 @@ Simple (and stupid) preprocessor for PHP.
     Cls.f() | Cls::f()      case 1   | case 1:
     Cls.CON | Cls::CON      <?       | <?php
     Cls()   | new Cls()     <?=      | <?php echo
+    ```
 
 - original line numbers are preserved, it's handy for debugging
 - lady herself is written in lady, USE THE SOURCE for reference
@@ -22,23 +24,27 @@ Simple (and stupid) preprocessor for PHP.
 
 ## Usage from PHP
 
-    require(__DIR__ . '/lady.php');
-    lady(__DIR__ . '/example.lady');
+```php
+require(__DIR__ . '/lady.php');
+lady(__DIR__ . '/example.lady');
+```
 
 
 ## Usage from command line
 
-    php lady.php -i example.lady -o example.php
-    php lady.php -c  # converts all .lady files in dir
-    php lady.php -w  # watches and converts on the fly
+```bash
+php lady.php -i example.lady -o example.php
+php lady.php -c  # converts all .lady files in dir
+php lady.php -w  # watches and converts on the fly
 
-    options:
-      -r  search files recursively
-      -e  expanded (human-like) style
+options:
+  -r  search files recursively
+  -e  expanded (human-like) style
+```
 
 
 ## Similar projects
 
-    http://github.com/runekaagaard/snowscript
-    http://github.com/bonndan/pythophant
-    http://github.com/knnktr-labs/flatwhite
+- [snowscript](http://github.com/runekaagaard/snowscript)
+- [pythophant](http://github.com/bonndan/pythophant)
+- [flatwhite](http://github.com/knnktr-labs/flatwhite)
