@@ -1,4 +1,7 @@
 {
-  "name": "unu/ladyphp",
-  "description": "type PHP with elegance"
+    "name": "unu/ladyphp",
+    "description": "type PHP with elegance",
+    "autoload": {
+        "classmap": ["lady.php"]
+    }
 }
