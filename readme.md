@@ -6,17 +6,17 @@ Simple (and stupid) preprocessor for PHP.
 - adds curly brackets according to indentation
 - adds some syntactic sugar:
 
-    ```
-    Lady    | PHP             Lady   | PHP
-    --------|----------     ---------|---------
-    var     | $var          a b      | $a . $b
-    obj.var | $obj->var     a .. b   | $a . $b
-    obj.f() | $obj->f()     [1: 2]   | array(1 => 2)
-    Cls.var | Cls::$var     fn       | function
-    Cls.f() | Cls::f()      case 1   | case 1:
-    Cls.CON | Cls::CON      <?       | <?php
-    Cls()   | new Cls()     <?=      | <?php echo
-    ```
+  ```
+  Lady    │ PHP           Lady    │ PHP
+  ────────┼─────────      ────────┼─────────
+  var     │ $var          a b     │ $a . $b
+  obj.var │ $obj->var     a .. b  │ $a . $b
+  obj.f() │ $obj->f()     [1: 2]  │ array(1 => 2)
+  Cls.var │ Cls::$var     fn      │ function
+  Cls.f() │ Cls::f()      case 1  │ case 1:
+  Cls.CON │ Cls::CON      <?      │ <?php
+  Cls()   │ new Cls()     <?=     │ <?php echo
+  ```
 
 - original line numbers are preserved, it's handy for debugging
 - lady herself is written in lady, USE THE SOURCE for reference
