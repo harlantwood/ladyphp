@@ -154,7 +154,8 @@ class Lady
             openingBracket = indent
 
         # line doesn't continue
-        elseif (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING ' ' self.CONTINUING)))
+        elseif (!in_array(tokens[n + 1]['str'], explode(' ', self.JOINING ' ' self.CONTINUING))
+              || closingBrackets[0] >= tokens[n + 1]['indent'])
           # there is saved opening bracket
           if (openingBracket !== false
               && tokens[n + 1]['indent'] > openingBracket)
