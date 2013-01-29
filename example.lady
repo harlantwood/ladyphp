@@ -26,10 +26,10 @@ class Fruit
 
 fruit = Fruit()
 
-anonym = (fn() use (fruit)
+anonym = fn() use (fruit)
   fruit.addApples(1)
        .addApples(2)
-)
+
 $anonym()
 
 ?>

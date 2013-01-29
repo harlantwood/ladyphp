@@ -43,6 +43,7 @@ class Lady{
     $source = str_replace("\r", '', $source);
     $openingBracket = false;
     $closingBrackets = array();
+    $anonymousBrackets = array();
     $closingIndentStr = array();
     $squareBrackets = 0;
     $arrayBrackets = array();
@@ -72,7 +73,9 @@ class Lady{
 
       # convert 'fn' to 'function'
       elseif ($type == T_STRING && $str == 'fn'){
-        $str = 'function';}
+        $str = 'function';
+        if ($tokens[$n + 1]['str'] == '('){
+          $anonymousBrackets[] = $indent;}}
 
       # convert . to -> or :: and .. to .
       elseif (!$type && $str == '.'){
@@ -127,6 +130,8 @@ class Lady{
         # sort list of closing brackets
         $closingBrackets = array_unique($closingBrackets);
         rsort($closingBrackets);
+        $anonymousBrackets = array_unique($anonymousBrackets);
+        rsort($anonymousBrackets);
 
         # switch block
         $isSwitch = false;
@@ -173,6 +178,10 @@ class Lady{
             if ($expanded){
               $str .= "\n" . $closingIndentStr[$closingBrackets[0]];}
             $str .= '}';
+            if (isset($anonymousBrackets[0]) && $anonymousBrackets[0] == $closingBrackets[0]){
+              $anonymousBrackets = array_slice($anonymousBrackets, 1);
+              if (!in_array($tokens[$n + 1]['str'], explode(' ', self::JOINING . ' ' . self::CONTINUING))){
+                $str .= ';';}}
             $closingBrackets = array_slice($closingBrackets, 1);}}}
 
       # convert php open tags
