@@ -1,0 +1,44 @@
+<?
+
+class Fruit
+  private apples = 0
+  private numbers = [
+    1: 'one',
+    2: 'two',
+    3: 'three'
+  ]
+
+  def addApples(n = 0)
+    if n >= 0
+      this.apples += n
+    end
+    return this
+  end
+
+  def countApples
+    apples = this.apples
+    out = 'You have '
+    out .= isset(this.numbers[apples])
+           ? this.numbers[apples] : apples
+    switch apples
+      case 1
+        return out . ' apple.'
+      default
+        return "$out apples."
+    end
+  end
+end
+
+fruit = new Fruit()
+
+anonym = def() use (fruit)
+  fruit.addApples(1)
+       .addApples(2)
+end;
+
+$anonym()
+
+echo "<p>" . fruit.countApples() . "</p>"
+
+Cls::func();
+Cls::$v;
